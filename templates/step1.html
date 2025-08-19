@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Step 1: DB Credentials</title>
+  <style>
+    /* Reset and base styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 0;
+    }
+    .main-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      max-width: 1100px;
+      width: 95vw;
+      padding: 36px 32px 24px 32px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .main-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #1a365d;
+      margin-bottom: 32px;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+    .forms-row {
+      display: flex;
+      gap: 36px;
+      width: 100%;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .form-box {
+      background: none;
+      box-shadow: none;
+      border-radius: 0;
+      padding: 0;
+      flex: 1;
+      min-width: 320px;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .form-label {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0078d7;
+      margin-bottom: 18px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    form {
+      background: #f8fafc;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,120,215,0.06);
+      padding: 24px 20px 10px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    label {
+      font-weight: 600;
+      color: #005ea1;
+      margin-bottom: 6px;
+      font-size: 1.05rem;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 1.05rem;
+      border: 1.5px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      font-family: inherit;
+    }
+    input:focus, select:focus {
+      border-color: #0078d7;
+      box-shadow: 0 0 8px rgba(0,120,215,0.13);
+      outline: none;
+    }
+    .divider {
+      width: 2px;
+      background: linear-gradient(to bottom, #e3e8ee 60%, #b3c6e0 100%);
+      min-height: 420px;
+      border-radius: 2px;
+      margin: 0 0 0 0;
+      align-self: stretch;
+    }
+    .center-btn {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 44px 0 0 0;
+    }
+    .center-btn button {
+      min-width: 180px;
+      max-width: 240px;
+      width: 100%;
+      margin: 0 auto;
+      font-size: 1.2rem;
+      border-radius: 50px;
+      padding: 14px 32px;
+      box-shadow: 0 6px 16px rgba(0,120,215,0.15);
+    }
+    @media (max-width: 900px) {
+      .forms-row {
+        flex-direction: column;
+        gap: 32px;
+        align-items: center;
+      }
+      .divider {
+        display: none;
+      }
+      .main-card {
+        padding: 18px 4vw 18px 4vw;
+      }
+    }
+    @media (max-width: 600px) {
+      .main-card {
+        padding: 8px 2vw 8px 2vw;
+      }
+      .form-box {
+        min-width: 0;
+        max-width: 100%;
+      }
+      form {
+        padding: 14px 4px 8px 4px;
+      }
+      .center-btn {
+        margin: 28px 0 0 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-card">
+    <div class="main-title">Database Migration - Source & Destination Connections</div>
+    <div class="forms-row">
+      <div class="form-box">
+        <div class="form-label">Source</div>
+        <form id="sourceForm">
+          <label for="source_subscription">Subscription:</label>
+          <select name="source_subscription" id="source_subscription" required>
+            <option value="" disabled selected>Select Subscription</option>
+            {% for sub in subscription_data %}
+              <option value="{{ sub.subscription_id }}">{{ sub.subscription_name }}</option>
+            {% endfor %}
+          </select>
+          <label for="source_server">Server:</label>
+          <select name="source_server" id="source_server" required>
+            <option value="" disabled selected>Select Server</option>
+          </select>
+          <label for="source_dbname">DB Name:</label>
+          <select name="source_dbname" id="source_dbname" required>
+            <option value="" disabled selected>Select Database</option>
+          </select>
+          <label for="source_user">Username:</label>
+          <input type="text" id="source_user" name="source_user" required>
+          <label for="source_auth_type">Authentication Type:</label>
+          <select name="source_auth_type" id="source_auth_type" required>
+            <option value="password">Password Auth</option>
+            <option value="mfa">MFA</option>
+          </select>
+          <div id="source_passwordDiv">
+            <label for="source_password">Password:</label>
+            <input type="password" id="source_password" name="source_password">
+          </div>
+        </form>
+      </div>
+      <div class="divider"></div>
+      <div class="form-box">
+        <div class="form-label">Destination</div>
+        <form id="destForm">
+          <label for="dest_subscription">Subscription:</label>
+          <select name="dest_subscription" id="dest_subscription" required>
+            <option value="" disabled selected>Select Subscription</option>
+            {% for sub in subscription_data %}
+              <option value="{{ sub.subscription_id }}">{{ sub.subscription_name }}</option>
+            {% endfor %}
+          </select>
+          <label for="dest_server">Server:</label>
+          <select name="dest_server" id="dest_server" required>
+            <option value="" disabled selected>Select Server</option>
+          </select>
+          <label for="dest_dbname">DB Name:</label>
+          <select name="dest_dbname" id="dest_dbname" required>
+            <option value="" disabled selected>Select Database</option>
+          </select>
+          <label for="dest_user">Username:</label>
+          <input type="text" id="dest_user" name="dest_user" required>
+          <label for="dest_auth_type">Authentication Type:</label>
+          <select name="dest_auth_type" id="dest_auth_type" required>
+            <option value="password">Password Auth</option>
+            <option value="mfa">MFA</option>
+          </select>
+          <div id="dest_passwordDiv">
+            <label for="dest_password">Password:</label>
+            <input type="password" id="dest_password" name="dest_password">
+          </div>
+        </form>
+      </div>
+    </div>
+    <div style="width:100%;max-width:400px;margin:36px auto 0 auto;">
+      <label for="CRnumber" style="font-weight:600;color:#005ea1;font-size:1.1rem;">CR Number:</label>
+      <input type="text" id="CRnumber" name="CRnumber" required style="width:100%;padding:10px 14px;font-size:1.1rem;border:1.5px solid #ccc;border-radius:6px;">
+    </div>
+    <div class="center-btn">
+      <button id="nextBtn" type="button">Next</button>
+    </div>
+  </div>
+  <form id="combinedForm" action="/step2" method="post" style="display:none;"></form>
+  <script>
+    // Source Form Logic
+    const subscriptionData = {{ subscription_data | tojson | safe }};
+    function setupForm(prefix) {
+      const subSel = document.getElementById(prefix + '_subscription');
+      const serverSel = document.getElementById(prefix + '_server');
+      const dbSel = document.getElementById(prefix + '_dbname');
+      const authSel = document.getElementById(prefix + '_auth_type');
+      const pwdDiv = document.getElementById(prefix + '_passwordDiv');
+      // Populate servers when subscription changes
+      subSel.addEventListener('change', function() {
+        serverSel.innerHTML = '<option value="" disabled selected>Select Server</option>';
+        dbSel.innerHTML = '<option value="" disabled selected>Select Database</option>';
+        const sub = subscriptionData.find(s => s.subscription_id === this.value);
+        if (sub && sub.server_list) {
+          let servers = Array.isArray(sub.server_list) ? sub.server_list : [sub.server_list];
+          servers.forEach(server => {
+            const opt = document.createElement('option');
+            opt.value = server.server_name;
+            opt.textContent = server.server_name;
+            opt.setAttribute('data-resource-group', server.resource_group);
+            serverSel.appendChild(opt);
+          });
+        }
+      });
+      // Populate databases when server changes
+      serverSel.addEventListener('change', function() {
+        dbSel.innerHTML = '<option value="" disabled selected>Select Database</option>';
+        const sub = subscriptionData.find(s => s.subscription_id === subSel.value);
+        if (sub && sub.server_list) {
+          let servers = Array.isArray(sub.server_list) ? sub.server_list : [sub.server_list];
+          const server = servers.find(s => s.server_name === this.value);
+          if (server && server.databases) {
+            server.databases.forEach(db => {
+              const opt = document.createElement('option');
+              opt.value = db;
+              opt.textContent = db;
+              dbSel.appendChild(opt);
+            });
+          }
+        }
+      });
+      // Show/hide password field based on auth type
+      authSel.addEventListener('change', function() {
+        if (this.value === 'mfa') {
+          pwdDiv.style.display = 'none';
+          document.getElementById(prefix + '_password').required = false;
+        } else {
+          pwdDiv.style.display = 'block';
+          document.getElementById(prefix + '_password').required = true;
+        }
+      });
+      // Initialize password field visibility
+      if (authSel.value === 'mfa') {
+        pwdDiv.style.display = 'none';
+        document.getElementById(prefix + '_password').required = false;
+      }
+    }
+    setupForm('source');
+    setupForm('dest');
+    // Combine and submit both forms on Next click
+    document.getElementById('nextBtn').onclick = function() {
+      const combinedForm = document.getElementById('combinedForm');
+      combinedForm.innerHTML = '';
+      // Copy all fields from both forms
+      ['sourceForm', 'destForm'].forEach(formId => {
+        const form = document.getElementById(formId);
+        Array.from(form.elements).forEach(el => {
+          if (el.name && el.value) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = el.name;
+            input.value = el.value;
+            combinedForm.appendChild(input);
+          }
+        });
+      });
+      // Add the single CRnumber field
+      const crInput = document.getElementById('CRnumber');
+      if (crInput && crInput.value) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'CRnumber';
+        input.value = crInput.value;
+        combinedForm.appendChild(input);
+      }
+      combinedForm.submit();
+    };
+  </script>
+</body>
+</html>

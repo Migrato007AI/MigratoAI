@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Step 2 - Select Objects</title>
+  <!-- Choices.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <style>
+    /* Your full CSS styling updated for Choices.js */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #2c3e50;
+      font-size: 1.2rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 1600px;
+      background: #fff;
+      padding: 40px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      position: relative; /* for dropdown layering */
+      z-index: 1000;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 40px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 2.4rem;
+      color: #2c3e50;
+    }
+    form {
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+      table-layout: fixed; /* equal column widths */
+      font-size: 1.2rem;
+      border: 2px solid #0078d7;
+      border-radius: 8px;
+      /* no overflow hidden to prevent cutting dropdown */
+    }
+    thead th {
+      background-color: #0078d7;
+      color: white;
+      padding: 16px 14px;
+      text-align: left;
+      font-weight: 700;
+      border-radius: 6px 6px 0 0;
+      border: 1.5px solid #005ea1;
+    }
+    tbody tr {
+      border-bottom: 1.5px solid #ddd;
+      transition: background-color 0.3s;
+    }
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+    tbody tr:hover {
+      background-color: #dbe9ff; /* stronger hover highlight */
+      cursor: pointer;
+    }
+    td {
+      padding: 12px 8px;
+      vertical-align: middle;
+      border: 1.5px solid #005ea1;
+      text-align: center;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 1.1rem;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-sizing: border-box;
+      /* Choices.js will override styles for select */
+    }
+    select:focus, input[type="number"]:focus {
+      border-color: #005aab;
+      box-shadow: 0 0 8px rgba(0, 90, 171, 0.4);
+      outline: none;
+    }
+    button {
+      display: block;
+      margin: 20px auto 0 auto;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,120,215,0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-width: 220px;
+    }
+    button:hover {
+      background-color: #005ea1;
+      box-shadow: 0 8px 26px rgba(0,94,161,0.7);
+    }
+    #addRowBtn {
+      background-color: #28a745;
+      margin-top: 0;
+      min-width: 150px;
+      padding: 12px 24px;
+      box-shadow: 0 6px 15px rgba(40,167,69,0.5);
+    }
+    #addRowBtn:hover {
+      background-color: #1e7e34;
+      box-shadow: 0 8px 20px rgba(30,126,52,0.7);
+    }
+    /* Choices.js dropdown z-index fix */
+    .choices__list--dropdown {
+      z-index: 1050;
+    }
+    @media (max-width: 700px) {
+      body {
+        padding: 20px 10px;
+      }
+      .container {
+        padding: 30px 20px;
+      }
+      button {
+        width: 100%;
+        min-width: auto;
+      }
+      #addRowBtn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Step 2: Select Objects to Migrate and Specify Order</h2>
+    <form method="post" action="/step3_synapse" id="objectsForm">
+      <!-- Pass credentials and crNumber forward as hidden inputs -->
+      <input type="hidden" name="sourceTenantId" value="{{ sourceTenantId }}">
+      <input type="hidden" name="sourceWorkspace" value="{{ sourceWorkspace }}">
+      <input type="hidden" name="destTenantId" value="{{ destTenantId }}">
+      <input type="hidden" name="SYNAPSE_TOKEN" value="{{ SYNAPSE_TOKEN }}">
+      <input type="hidden" name="destWorkspace" value="{{ destWorkspace }}">
+      <input type="hidden" name="crNumber" value="{{ crNumber }}">
+      <input type="hidden" name="source_objects_json" value="{{ source_objects_json }}">
+      <input type="hidden" name="dest_objects_json" value="{{ dest_objects_json }}">
+      <input type="hidden" name="sourceRepoName" value="{{ sourceRepoName }}">
+      <input type="hidden" name="sourceFolderName" value="{{ sourceFolderName }}">
+      <input type="hidden" name="sourceBranch" value="{{ sourceBranch }}">
+      <input type="hidden" name="sourcePAT" value="{{ sourcePAT }}">
+      <input type="hidden" name="destRepoName" value="{{ destRepoName }}">
+      <input type="hidden" name="destFolderName" value="{{ destFolderName }}">
+      <input type="hidden" name="destBranch" value="{{ destBranch }}">
+      <input type="hidden" name="destPAT" value="{{ destPAT }}">
+
+
+      <table id="objectsTable" aria-label="Objects Selection Table">
+        <thead>
+          <tr>
+            <th>Object Type</th>
+            <th>Object Name</th>
+            <th>Order</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Initial row -->
+          <tr class="object-row">
+            <td>
+              <select class="object-type" name="objectType[]" required>
+                <option value="" disabled selected>Select Object Type</option>
+                {% for obj_type in object_types %}
+                <option value="{{ obj_type }}">{{ obj_type }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <select class="object-name" name="objectName[]" required disabled>
+                <option value="" disabled selected>Select Object Name</option>
+              </select>
+            </td>
+            <td>
+              <input type="number" name="order[]" min="1" value="1" required />
+            </td>
+            <td>
+              <button type="button" class="removeRowBtn" aria-label="Remove this row" title="Remove row">✕</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <button type="button" id="addRowBtn">Add Row</button>
+      <button type="submit">Next: Compare Objects</button>
+    </form>
+  </div>
+
+
+  <!-- Choices.js JS -->
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+
+  <script>
+    // Assume these variables are injected server-side
+    const sourceObjects = {{ source_objects|tojson|safe }};
+    const objectTypes = {{ object_types|tojson|safe }};
+
+
+    const objectsTableBody = document.querySelector('#objectsTable tbody');
+    const addRowBtn = document.getElementById('addRowBtn');
+
+
+    // Store Choices.js instances to manage lifecycle
+    const choicesInstances = new Map();
+
+
+    function initChoices(selectElem) {
+      if (choicesInstances.has(selectElem)) {
+        choicesInstances.get(selectElem).destroy();
+        choicesInstances.delete(selectElem);
+      }
+      const choices = new Choices(selectElem, {
+        searchEnabled: true,
+        itemSelectText: '',
+        shouldSort: false,
+        placeholder: true,
+        placeholderValue: selectElem.options[0]?.text || 'Select...',
+        position: 'bottom',
+      });
+      choicesInstances.set(selectElem, choices);
+    }
+
+
+    function createRow() {
+      const tr = document.createElement('tr');
+      tr.classList.add('object-row');
+
+
+      // Object Type TD
+      const tdType = document.createElement('td');
+      const selectType = document.createElement('select');
+      selectType.name = "objectType[]";
+      selectType.required = true;
+      selectType.classList.add('object-type');
+      selectType.innerHTML = `<option value="" disabled selected>Select Object Type</option>` +
+        objectTypes.map(ot => `<option value="${ot}">${ot}</option>`).join('');
+      tdType.appendChild(selectType);
+
+
+      // Object Name TD
+      const tdName = document.createElement('td');
+      const selectName = document.createElement('select');
+      selectName.name = "objectName[]";
+      selectName.required = true;
+      selectName.disabled = true;
+      selectName.classList.add('object-name');
+      selectName.innerHTML = `<option value="" disabled selected>Select Object Name</option>`;
+      tdName.appendChild(selectName);
+
+
+      // Order TD
+      const tdOrder = document.createElement('td');
+      const inputOrder = document.createElement('input');
+      inputOrder.type = "number";
+      inputOrder.name = "order[]";
+      inputOrder.min = "1";
+      inputOrder.value = "1";
+      inputOrder.required = true;
+      tdOrder.appendChild(inputOrder);
+
+
+      // Remove button TD
+      const tdRemove = document.createElement('td');
+      const removeBtn = document.createElement('button');
+      removeBtn.type = "button";
+      removeBtn.className = "removeRowBtn";
+      removeBtn.title = "Remove row";
+      removeBtn.setAttribute('aria-label', 'Remove this row');
+      removeBtn.textContent = "✕";
+      tdRemove.appendChild(removeBtn);
+
+
+      tr.appendChild(tdType);
+      tr.appendChild(tdName);
+      tr.appendChild(tdOrder);
+      tr.appendChild(tdRemove);
+
+
+      // Event listeners
+      selectType.addEventListener('change', onObjectTypeChange);
+      removeBtn.addEventListener('click', () => {
+        // Destroy Choices instances when row removed
+        if (choicesInstances.has(selectType)) {
+          choicesInstances.get(selectType).destroy();
+          choicesInstances.delete(selectType);
+        }
+        if (choicesInstances.has(selectName)) {
+          choicesInstances.get(selectName).destroy();
+          choicesInstances.delete(selectName);
+        }
+        tr.remove();
+      });
+
+
+      // Initialize Choices on selects
+      initChoices(selectType);
+      initChoices(selectName);
+
+
+      return tr;
+    }
+
+
+    function onObjectTypeChange(event) {
+      const selectType = event.target;
+      const tr = selectType.closest('tr');
+      const selectName = tr.querySelector('.object-name');
+      const selectedType = selectType.value;
+
+
+      // Destroy old Choices instance before updating options
+      if (choicesInstances.has(selectName)) {
+        choicesInstances.get(selectName).destroy();
+        choicesInstances.delete(selectName);
+      }
+
+
+      if (!selectedType || !sourceObjects[selectedType]) {
+        selectName.innerHTML = `<option value="" disabled selected>Select Object Name</option>`;
+        selectName.disabled = true;
+        initChoices(selectName);
+        return;
+      }
+
+
+      const options = sourceObjects[selectedType]
+        .map(objName => `<option value="${objName}">${objName}</option>`)
+        .join('');
+
+
+      selectName.innerHTML = `<option value="" selected>Select Object Name</option>` + options;
+      selectName.disabled = false;
+
+
+      // Re-initialize Choices on updated select
+      initChoices(selectName);
+    }
+
+
+    // Initialize Choices on all existing selects on page load and attach event listeners to object-type selects
+    document.querySelectorAll('.object-type').forEach(select => {
+      initChoices(select);
+      select.addEventListener('change', onObjectTypeChange);
+    });
+    document.querySelectorAll('.object-name').forEach(select => initChoices(select));
+
+
+    addRowBtn.addEventListener('click', () => {
+      const newRow = createRow();
+      objectsTableBody.appendChild(newRow);
+    });
+
+
+    // Attach remove event to initial row's remove button
+    document.querySelectorAll('.removeRowBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tr = e.target.closest('tr');
+        const selectType = tr.querySelector('.object-type');
+        const selectName = tr.querySelector('.object-name');
+        if (choicesInstances.has(selectType)) {
+          choicesInstances.get(selectType).destroy();
+          choicesInstances.delete(selectType);
+        }
+        if (choicesInstances.has(selectName)) {
+          choicesInstances.get(selectName).destroy();
+          choicesInstances.delete(selectName);
+        }
+        tr.remove();
+      });
+    });
+  </script>
+</body>
+</html>

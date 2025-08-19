@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Step 7: Compare and Confirm Migration</title>
+
+  <!-- diff2html CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css" />
+
+  <!-- diff and diff2html JS -->
+  <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html.min.js"></script>
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      padding: 40px 20px;
+      color: #2c3e50;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 1400px;
+      width: 100%;
+      background: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 30px;
+      font-weight: 700;
+      font-size: 2rem;
+      text-align: center;
+      color: #2c3e50;
+    }
+    /* Metadata block above each comparison */
+    .object-metadata {
+      display: flex;
+      justify-content: flex-start;
+      gap: 30px;
+      margin-top: 30px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #0078d7;
+      border-bottom: 2px solid #0078d7;
+      padding-bottom: 6px;
+      user-select: none;
+    }
+    .object-metadata > div {
+      min-width: 150px;
+    }
+    /* Table styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      margin-bottom: 40px;
+    }
+    thead th {
+      background-color: #0078d7;
+      color: white;
+      padding: 12px 8px;
+      font-weight: 700;
+      text-align: center;
+      border-radius: 6px 6px 0 0;
+      width: 50%;
+    }
+    tbody tr {
+      border-bottom: 1.5px solid #ddd;
+    }
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+    td {
+      padding: 10px 12px;
+      vertical-align: top;
+      width: 50%;
+      overflow-wrap: break-word;
+    }
+    /* diff container styling */
+    .diff-container {
+      max-height: auto;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    /* Toggle button styling */
+    .toggle-button {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      padding: 0;
+    }
+    form {
+      margin-top: 30px;
+      text-align: center;
+    }
+    button {
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 14px 48px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,120,215,0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-width: 220px;
+    }
+    button:hover {
+      background-color: #005ea1;
+      box-shadow: 0 8px 26px rgba(0,94,161,0.7);
+    }
+    @media (max-width: 900px) {
+      .object-metadata {
+        flex-direction: column;
+        gap: 6px;
+      }
+      .object-metadata > div {
+        min-width: auto;
+      }
+      td {
+        width: 100%;
+      }
+      .diff-container {
+        max-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Compare Source and Destination Object Definitions</h2>
+
+    <form method="post" action="/step4_postgres">
+      <input type="hidden" name="CRnumber" value="{{ CRnumber }}">
+      <input type="hidden" name="compare_data" value="{{ compare_data }}">
+      <input type="hidden" name="dest_conn_params" value="{{ dest_conn_params }}">
+      <input type="hidden" name="source_conn_params" value="{{ conn_params }}">
+
+      {% for obj in compare_data %}
+        <input type="hidden" name="schema_{{ loop.index0 }}" value="{{ obj.schema }}">
+        <input type="hidden" name="objname_{{ loop.index0 }}" value="{{ obj.objname }}">
+        <input type="hidden" name="source_def_{{ loop.index0 }}" value="{{ obj.source_definition }}">
+        <input type="hidden" name="dest_def_{{ loop.index0 }}" value="{{ obj.dest_definition }}">
+        <input type="hidden" name="objtype_{{ loop.index0 }}" value="{{ obj.objtype }}">
+        <input type="hidden" name="SAS_URL_Source_DB_{{ loop.index0 }}" value="{{ obj.SAS_URL_Source_DB }}">
+        <input type="hidden" name="SAS_URL_Dest_DB_{{ loop.index0 }}" value="{{ obj.SAS_URL_Dest_DB }}">
+      {% endfor %}
+
+      {% for key, val in dest_conn_params.items() %}
+        <input type="hidden" name="dest_{{ key }}" value="{{ val }}">
+      {% endfor %}
+
+      {% for key, val in conn_params.items() %}
+        <input type="hidden" name="source_{{ key }}" value="{{ val }}">
+      {% endfor %}
+
+      {% for obj in compare_data %}
+        <div class="object-metadata" aria-label="Object metadata">
+          <div>Schema.Object: <span>{{ obj.schema }}.{{ obj.objname }}</span></div>
+        </div>
+
+        <table aria-label="Source and Destination Definition Comparison for {{ obj.schema }}.{{ obj.objname }}">
+          <thead>
+            <tr>
+              <th style="position: relative;">
+                <button type="button" class="toggle-button" aria-expanded="false" aria-controls="diff-{{ loop.index }}">+</button>
+                Source Definition
+              </th>
+              <th>Destination Definition</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="2">
+                <div id="diff-{{ loop.index }}" class="diff-container" hidden></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      {% endfor %}
+
+      <input type="hidden" name="count" value="{{ compare_data|length }}">
+      <br/>
+      <label><input type="checkbox" id="Github_commit" name="Github_commit" checked>Check This for Github_commit</label>
+      <label><input type="checkbox" id="DML_PRESENT" name="DML_PRESENT" checked>Check This for DML</label>
+      <button type="submit">Confirm and Apply Migration</button>
+    </form>
+  </div>
+
+  <script>
+
+    function prettifySql(sqlText) {
+    try {
+      return window.sqlFormatter.format(sqlText, {
+        language: 'plsql',
+        indent: '  ',
+        uppercase: true
+      });
+      } catch (e) {
+      console.warn('SQL formatting error:', e);
+      return sqlText;
+      }
+    }
+
+    function removeEmptyLines(text) {
+    return text
+      .split('\n')
+      .filter(line => line.trim() !== '') // Remove empty or whitespace-only lines
+      .join('\n');
+      }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const compareData = [
+        {% for obj in compare_data %}
+          {
+            schema: "{{ obj.schema }}",
+            objname: "{{ obj.objname }}",
+            source_definition: `{{ obj.source_definition | tojson }}`,
+            dest_definition: `{{ obj.dest_definition | tojson }}`
+          },
+        {% endfor %}
+      ];
+
+      console.log(compareData);
+      compareData.forEach((obj, index) => {
+        const prettySource = prettifySql(removeEmptyLines(obj.source_definition));
+        const prettyDest = prettifySql(removeEmptyLines(obj.dest_definition));
+        const diffText = Diff.createTwoFilesPatch(
+          'Source',
+          'Destination',
+          prettySource,
+          prettyDest,
+          '',
+          '',
+          { context: 3 }
+        );
+
+        const diffHtml = Diff2Html.html(diffText, {
+          drawFileList: false,
+          matching: 'lines',
+          outputFormat: 'side-by-side',
+          synchronisedScroll: true,
+          highlight: true
+        });
+
+        const diffContainer = document.getElementById(`diff-${index + 1}`);
+        if (diffContainer) {
+          diffContainer.innerHTML = diffHtml;
+	  diffContainer.hidden = true; // Hide diffs initially
+        }
+      });
+
+      // Toggle button logic
+      const toggleButtons = document.querySelectorAll('.toggle-button');
+      toggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const targetId = button.getAttribute('aria-controls');
+          const diffDiv = document.getElementById(targetId);
+          if (!diffDiv) return;
+
+          const isHidden = diffDiv.hidden;
+          diffDiv.hidden = !isHidden;
+          button.textContent = isHidden ? '-' : '+';
+          button.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+        });
+      });
+    });
+  </script>
+<!-- sql-formatter CDN for prettifySql -->
+  <script src="https://cdn.jsdelivr.net/npm/sql-formatter@5.0.0/dist/sql-formatter.min.js"></script>
+</body>
+</html>

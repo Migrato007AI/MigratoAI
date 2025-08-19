@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Home Page</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7fa;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      padding: 30px 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      border: 1.8px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #4a90e2;
+      outline: none;
+    }
+
+    select[multiple] {
+      height: 120px;
+    }
+
+    button {
+      width: 100%;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(74, 144, 226, 0.6);
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #357abd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Project Configuration</h1>
+    <form action="/Admin_user" method="post">
+      <label for="projectName">Project Name</label>
+      <input type="text" id="projectName" name="projectName" required />
+
+      <label for="projectDesc">Project Description</label>
+      <textarea id="projectDesc" name="projectDesc" rows="4" required></textarea>
+
+      <label for="dbResources">Azure Resources Used - DB (Multi-select)</label>
+      <select id="dbResources" name="dbResources" multiple required>
+        <option value="Sql Server">Sql Server</option>
+        <option value="Postgres">Postgres</option>
+        <option value="Oracle">Oracle</option>
+        <option value="MySQL">MySQL</option>
+      </select>
+
+      <label for="etlResources">Azure Resources Used - ETL (Multi-select)</label>
+      <select id="etlResources" name="etlResources" multiple required>
+        <option value="Azure Data Factory">Azure Data Factory</option>
+        <option value="Azure Synapse">Azure Synapse</option>
+        <option value="Azure Databricks">Azure Databricks</option>
+        <option value="Snowflake">Snowflake</option>
+      </select>
+
+      <!-- Hidden inputs or separate form for blob storage config could be handled on backend or another page -->
+      <button type="submit">Save Configuration</button>
+    </form>
+  </div>
+</body>
+</html>

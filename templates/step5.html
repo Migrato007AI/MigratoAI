@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Step 5: GitHub Paths & Credentials</title>
+  <style>
+    /* Reset and base styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #2c3e50;
+      font-size: 1.2rem; /* increased base font size */
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px; /* increased max-width */
+      background: #fff;
+      padding: 40px 50px; /* increased padding */
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 40px; /* more spacing */
+      text-align: center;
+      font-weight: 700;
+      font-size: 2.4rem; /* larger heading */
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #005ea1;
+      margin-bottom: 12px; /* more spacing */
+      font-size: 1.3rem; /* larger label font */
+    }
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      max-width: 500px; /* wider inputs/selects */
+      padding: 14px 18px; /* bigger padding */
+      font-size: 1.2rem; /* bigger font */
+      border: 1.5px solid #ccc;
+      border-radius: 8px; /* slightly bigger radius */
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      border-color: #005aab;
+      box-shadow: 0 0 10px rgba(0, 90, 171, 0.5);
+      outline: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 2px solid #0078d7;
+      border-radius: 10px;
+      font-size: 1.2rem; /* larger text */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-shadow: 0 2px 10px rgba(0, 120, 215, 0.15);
+      margin-top: 40px;
+      overflow: hidden;
+      table-layout: fixed;
+    }
+    thead {
+      background-color: #0078d7;
+      color: white;
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    th, td {
+      border-bottom: 1px solid #d1d9e6;
+      padding: 20px 18px; /* more padding */
+      text-align: left;
+      vertical-align: top;
+      word-break: break-word;
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    tbody tr:hover {
+      background-color: #dbe9ff;
+    }
+    /* Set column widths to better fit content */
+    th:nth-child(1), td:nth-child(1) {
+      width: 20%;
+    }
+    th:nth-child(2), td:nth-child(2) {
+      width: 40%;
+    }
+    th:nth-child(3), td:nth-child(3) {
+      width: 40%;
+    }
+    select.folder-path {
+      max-width: 100%;
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+    }
+    button {
+      display: block;
+      margin: 40px auto 0 auto;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 16px 40px; /* larger padding */
+      font-size: 1.4rem; /* larger font */
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,120,215,0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-width: 220px;
+    }
+    button:hover {
+      background-color: #005ea1;
+      box-shadow: 0 8px 26px rgba(0,94,161,0.7);
+    }
+    @media (max-width: 900px) {
+      .container {
+        padding: 30px 25px;
+        max-width: 100%;
+      }
+      h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+      label {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+      }
+      input[type="text"],
+      input[type="password"],
+      select {
+        max-width: 100%;
+        font-size: 1.1rem;
+        padding: 12px 14px;
+      }
+      table {
+        font-size: 1.1rem;
+      }
+      th, td {
+        padding: 16px 12px;
+      }
+      button {
+        width: 100%;
+        font-size: 1.2rem;
+        padding: 14px 28px;
+        min-width: auto;
+      }
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+        font-size: 1.1rem;
+      }
+      h2 {
+        font-size: 1.6rem;
+        margin-bottom: 25px;
+      }
+      label {
+        font-size: 1rem;
+        margin-bottom: 8px;
+      }
+      input[type="text"],
+      input[type="password"],
+      select {
+        font-size: 1rem;
+        padding: 10px 12px;
+      }
+      table {
+        font-size: 1rem;
+      }
+      th, td {
+        padding: 12px 10px;
+      }
+      button {
+        font-size: 1.1rem;
+        padding: 12px 24px;
+      }
+    }
+    th:nth-child(4), td:nth-child(4) {
+    width: 30%;
+    max-width: 500px;
+    word-wrap: break-word;
+    white-space: normal;
+  }
+
+  input.commit-desc {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    font-size: 1.1rem;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+
+  table {
+  table-layout: fixed;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>GitHub Info & Folder Paths per Object</h2>
+    <form method="post" action="/step5">
+      <!-- Hidden GitHub Base Path -->
+      <input type="hidden" name="github_base_path" value="{{ github_base_path|default('db_migration/') }}">
+      <input type="hidden" name="source_conn_params" value="{{ source_conn_params }}">
+      <input type="hidden" name="dest_conn_params" value="{{ dest_conn_params }}">
+      <input type="hidden" name="compare_data" value="{{ compare_data }}">
+      <input type="hidden" name="DML_PRESENT" value="{{ DML_PRESENT }}">
+      <input type="hidden" name="CRnumber" value="{{ CRnumber }}">
+
+      {% for key, val in dest_conn_params.items() %}
+        <input type="hidden" name="dest_{{ key }}" value="{{ val }}">
+      {% endfor %}
+
+
+      <label for="github_token">GitHub Personal Access Token:</label>
+      <input type="password" id="github_token" name="github_token" required style="max-width:500px;">
+
+      <br/><br/>
+
+      <label for="github_org">GitHub Organization:</label>
+      <select id="github_org" name="github_org" required>
+        <option value="" disabled selected>Select Organization</option>
+      </select>
+      <br/><br/>
+
+      <label for="github_repo">GitHub Repository:</label>
+      <select id="github_repo" name="github_repo" required>
+        <option value="" disabled selected>Select Repository</option>
+        <!-- Example options, replace with dynamic values if needed -->
+        <option value="ATT-DP5/apm0013829-varicent-etl-30934-varicent-direct-db">ATT-DP5/apm0013829-varicent-etl-30934-varicent-direct-db</option>
+      </select>
+
+      <br/><br/>
+
+      <label for="github_branch">Branch:</label>
+      <select id="github_branch" name="github_branch" required>
+        <option value="" disabled selected>Select Branch</option>
+        <!-- Example branches -->
+        <option value="develop">develop</option>
+        <option value="working" selected>working</option>
+        <option value="features">features</option>
+      </select>
+
+      <h3 style="margin-top: 50px;">Objects and Folder Paths</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Object Type</th>
+            <th>File Path</th>
+            <th>GitHub Folder Path (relative to base path)</th>
+            <th>Commit Description (optional)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files %}
+          <tr>
+            <td>{{ file.object_type }}</td>
+            <td>{{ file.file_path }}</td>
+            <td>
+              <select class="folder-path" name="folder_path_{{ loop.index0 }}" data-row="{{ loop.index0 }}" required>
+                <option value="" disabled selected>Select Folder Path</option>
+                <!-- Will be dynamically populated -->
+              </select>
+              <input type="hidden" name="file_path_{{ loop.index0 }}" value="{{ file.file_path }}">
+              <input type="hidden" name="object_type_{{ loop.index0 }}" value="{{ file.object_type }}">
+              <input type="hidden" name="source_def_{{ loop.index0 }}" value="{{ file.source_def }}">
+              <input type="hidden" name="dest_def_{{ loop.index0 }}" value="{{ file.dest_def }}">
+              <input type="hidden" name="SAS_URL_Source_DB_{{ loop.index0 }}" value="{{ file.SAS_URL_Source_DB }}">
+              <input type="hidden" name="SAS_URL_Dest_DB_{{ loop.index0 }}" value="{{ file.SAS_URL_Dest_DB }}">
+            </td>
+            <td>
+              <input type="text" class="commit-desc" name="commit_desc_{{ loop.index0 }}" placeholder="Enter commit description (optional)">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <input type="hidden" name="CRnumber" value="{{ CRnumber }}">
+      <input type="hidden" name="file_count" value="{{ files|length }}">
+
+      <button type="submit">Submit GitHub Info & Paths</button>
+    </form>
+  </div>
+  <script>
+    // Helper to get token value
+    function getToken() {
+      return document.getElementById('github_token').value.trim();
+    }
+
+    // Fetch orgs when token is entered
+    document.getElementById('github_token').addEventListener('blur', function() {
+      const token = getToken();
+      if (!token) return;
+      fetch('/api/github/orgs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      })
+      .then(r => r.json())
+      .then(data => {
+        const orgSel = document.getElementById('github_org');
+        orgSel.innerHTML = '<option value="" disabled selected>Select Organization</option>';
+        data.orgs.forEach(org => {
+          const opt = document.createElement('option');
+          opt.value = org.login;
+          opt.textContent = org.login;
+          orgSel.appendChild(opt);
+        });
+      });
+    });
+
+    // Fetch repos when org is selected
+    document.getElementById('github_org').addEventListener('change', function() {
+      const token = getToken();
+      const org = this.value;
+      fetch('/api/github/repos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, org })
+      })
+      .then(r => r.json())
+      .then(data => {
+        const repoSel = document.getElementById('github_repo');
+        repoSel.innerHTML = '<option value="" disabled selected>Select Repository</option>';
+        data.repos.forEach(repo => {
+          const opt = document.createElement('option');
+          opt.value = repo.name;
+          opt.textContent = repo.name;
+          repoSel.appendChild(opt);
+        });
+      });
+    });
+
+    // Fetch branches when repo is selected
+    document.getElementById('github_repo').addEventListener('change', function() {
+      const token = getToken();
+      const org = document.getElementById('github_org').value;
+      const repo = this.value;
+      fetch('/api/github/branches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, org, repo })
+      })
+      .then(r => r.json())
+      .then(data => {
+        const branchSel = document.getElementById('github_branch');
+        branchSel.innerHTML = '<option value="" disabled selected>Select Branch</option>';
+        data.branches.forEach(branch => {
+          const opt = document.createElement('option');
+          opt.value = branch.name;
+          opt.textContent = branch.name;
+          branchSel.appendChild(opt);
+        });
+      });
+
+      // Also update folder paths when repo changes
+      updateAllFolderPathDropdowns();
+    });
+
+    // Also update folder paths when branch changes
+    document.getElementById('github_branch').addEventListener('change', updateAllFolderPathDropdowns);
+
+    // Also update folder paths when token changes (blur)
+    document.getElementById('github_token').addEventListener('blur', updateAllFolderPathDropdowns);
+
+    // Helper to fetch folder paths from backend, now includes org
+    async function fetchFolderPaths(repo, branch, token, org) {
+      if (!repo || !branch || !token || !org) return [];
+      try {
+        const response = await fetch('/get_github_paths', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ repo: org + '/' + repo, branch, token })
+        });
+        if (!response.ok) return [];
+        const data = await response.json();
+        return data.paths || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // Populate all folder-path selects
+    async function updateAllFolderPathDropdowns() {
+      const repo = document.getElementById('github_repo').value;
+      const branch = document.getElementById('github_branch').value;
+      const token = document.getElementById('github_token').value.trim();
+      const org = document.getElementById('github_org').value;
+      const selects = document.querySelectorAll('.folder-path');
+      const paths = await fetchFolderPaths(repo, branch, token, org);
+      selects.forEach(sel => {
+        const current = sel.value;
+        sel.innerHTML = '<option value="" disabled selected>Select Folder Path</option>';
+        paths.forEach(path => {
+          const opt = document.createElement('option');
+          opt.value = path;
+          opt.textContent = path;
+          if (current === path) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    // Optionally, trigger on page load if values are prefilled
+    window.addEventListener('DOMContentLoaded', updateAllFolderPathDropdowns);
+  </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit DML Script</title>
+  <style>
+    /* Reset and base styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #2c3e50;
+      font-size: 1.2rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      padding: 40px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 40px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 2.4rem;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #005ea1;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1.2rem;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-bottom: 24px;
+      resize: vertical;
+      min-height: 120px;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: #005aab;
+      box-shadow: 0 0 10px rgba(0, 90, 171, 0.5);
+      outline: none;
+    }
+    button {
+      display: block;
+      width: 100%;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 16px 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,120,215,0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #005ea1;
+      box-shadow: 0 8px 26px rgba(0,94,161,0.7);
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+        max-width: 100%;
+      }
+      h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+      label {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+      input[type="text"],
+      textarea {
+        font-size: 1.1rem;
+        padding: 12px 14px;
+        margin-bottom: 20px;
+      }
+      button {
+        font-size: 1.2rem;
+        padding: 14px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Submit DML Script</h2>
+    <form method="post">
+      <label for="filename">Filename (with or without .sql):</label>
+      <input type="text" name="filename" id="filename" required />
+
+      <label for="dml_script">DML Script (SQL):</label>
+      <textarea name="dml_script" id="dml_script" required></textarea>
+
+      <label for="github_folder">GitHub Folder Path (relative to repo root):</label>
+      <input type="text" name="github_folder" id="github_folder" placeholder="e.g. db_dml_scripts" />
+
+      <label for="local_path">Local Path:</label>
+      <input type="text" name="local_path" id="local_path" placeholder="e.g. C:/" />
+
+      <!-- Hidden fields for credentials -->
+      <input type="hidden" name="host" value="{{ host }}">
+      <input type="hidden" name="port" value="{{ port }}">
+      <input type="hidden" name="dbname" value="{{ dbname }}">
+      <input type="hidden" name="user" value="{{ user }}">
+      <input type="hidden" name="password" value="{{ password }}">
+
+      <input type="hidden" name="github_token" value="{{ github_token }}">
+      <input type="hidden" name="github_repo" value="{{ github_repo }}">
+      <input type="hidden" name="github_branch" value="{{ github_branch }}">
+
+      <!-- If you have CRnumber -->
+      <input type="hidden" name="CRnumber" value="{{ CRnumber }}">
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</body>
+</html>

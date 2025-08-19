@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Step 2: Select Objects Dynamically</title>
+  <style>
+    /* Reset and base styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      position: relative; /* Added for dropdown layering */
+      z-index: 1000;      /* Added for dropdown layering */
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #2c3e50;
+      font-weight: 700;
+      font-size: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed; /* equal column widths */
+      font-size: 1.1rem; /* increased font size */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      border: 2px solid #0078d7; /* stronger outer border */
+      border-radius: 8px;
+      /* Removed overflow:hidden to prevent clipping dropdown */
+    }
+    thead {
+      background-color: #0078d7;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    th, td {
+      border: 1.5px solid #005ea1; /* darker border for better contrast */
+      padding: 16px 14px; /* increased padding */
+      text-align: center;
+      vertical-align: middle;
+    }
+    tbody tr:hover {
+      background-color: #dbe9ff; /* stronger hover highlight */
+      cursor: pointer;
+    }
+    select {
+      font-size: 1.1rem; /* increase select font size for readability */
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1.5px solid #ccc;
+      width: 100%;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    select:focus {
+      border-color: #005aab;
+      box-shadow: 0 0 8px rgba(0, 90, 171, 0.4);
+      outline: none;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    button {
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,120,215,0.4);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    button:hover {
+      background-color: #005ea1;
+      box-shadow: 0 8px 22px rgba(0,94,161,0.6);
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 15px;
+      }
+      .buttons {
+        flex-direction: column;
+        gap: 12px;
+      }
+      button {
+        width: 100%;
+        font-size: 1.1rem;
+        padding: 12px 24px;
+      }
+      table {
+        font-size: 1rem;
+      }
+      th, td {
+        padding: 12px 10px;
+      }
+      select {
+        font-size: 1rem;
+        padding: 8px 10px;
+      }
+    }
+  </style>
+
+  <!-- Choices.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Select Objects</h2>
+
+    <form action="/step3" method="post" id="objForm">
+      <!-- Pass DB connection params hidden -->
+      <input type="hidden" name="host" value="{{ conn_params.host }}">
+      <input type="hidden" name="dbname" value="{{ conn_params.dbname }}">
+      <input type="hidden" name="user" value="{{ conn_params.user }}">
+      <input type="hidden" name="password" value="{{ conn_params.password }}">
+      <input type="hidden" name="port" value="{{ conn_params.port }}">
+
+      <input type="hidden" name="dest_host" value="{{ dest_conn_params.host }}">
+      <input type="hidden" name="dest_dbname" value="{{ dest_conn_params.dbname }}">
+      <input type="hidden" name="dest_user" value="{{ dest_conn_params.user }}">
+      <input type="hidden" name="dest_password" value="{{ dest_conn_params.password }}">
+      <input type="hidden" name="dest_port" value="{{ dest_conn_params.port }}">
+      <input type="hidden" name="dest_conn_params" value="{{ dest_conn_params }}">
+      <input type="hidden" name="conn_params" value="{{ conn_params }}">
+      <input type="hidden" name="CRnumber" value="{{ CRnumber }}">
+      <input type="hidden" name="source_conn" value="{{ source_conn }}">
+      <input type="hidden" name="dest_conn" value="{{ dest_conn }}">
+
+      <table id="objTable">
+        <thead>
+          <tr>
+            <th>Schema</th>
+            <th>Object Type</th>
+            <th>Object Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <select name="schema_0" class="schema" required>
+                <option value="">--Select Schema--</option>
+                {% for schema in schemas %}
+                  <option value="{{ schema }}">{{ schema }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <select name="objtype_0" class="objtype" required disabled>
+                <option value="">--Select Object Type--</option>
+              </select>
+            </td>
+            <td>
+              <select name="objname_0" class="objname" required disabled>
+                <option value="">--Select Object Name--</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="buttons">
+        <button type="button" id="addRowBtn">+ Add Row</button>
+        <button type="submit">Next</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Choices.js JS -->
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <script>
+    const connParams = {
+      host: "{{ conn_params.host }}",
+      port: "{{ conn_params.port }}",
+      dbname: "{{ conn_params.dbname }}",
+      user: "{{ conn_params.user }}",
+      password: "{{ conn_params.password }}"
+    };
+
+    const conn_params = "{{ conn_params }}"
+
+    const CRnumber = "{{ CRnumber }}";
+
+    const objTable = document.getElementById('objTable').getElementsByTagName('tbody')[0];
+    let rowCount = 1;
+
+    const choicesInstances = new Map();
+
+    function initChoices(selectElem) {
+      if (choicesInstances.has(selectElem)) {
+        choicesInstances.get(selectElem).destroy();
+        choicesInstances.delete(selectElem);
+      }
+      const choices = new Choices(selectElem, {
+        searchEnabled: true,
+        itemSelectText: '',
+        shouldSort: false,
+        placeholder: true,
+        placeholderValue: selectElem.options[0]?.text || 'Select...',
+        position: 'bottom',  // ensure dropdown appears below select
+        // Add zIndex if needed but Choices.js handles layering usually
+      });
+      choicesInstances.set(selectElem, choices);
+    }
+
+    async function fetchObjectTypes(schema) {
+      if (!schema) return [];
+      const response = await fetch('/get_object_types', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schema })
+      });
+      return await response.json();
+    }
+
+    async function fetchObjectNames(schema, objtype) {
+      if (!schema || !objtype) return [];
+      const response = await fetch('/get_object_names', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conn_params: connParams, schema, objtype, CRnumber })
+      });
+      return await response.json();
+    }
+
+    async function onSchemaChange(event) {
+      const row = event.target.closest('tr');
+      const schema = event.target.value;
+
+      const objtypeSelect = row.querySelector('.objtype');
+      const objnameSelect = row.querySelector('.objname');
+
+      objtypeSelect.innerHTML = '<option value="">--Select Object Type--</option>';
+      objtypeSelect.disabled = true;
+      objnameSelect.innerHTML = '<option value="">--Select Object Name--</option>';
+      objnameSelect.disabled = true;
+
+      if (choicesInstances.has(objtypeSelect)) {
+        choicesInstances.get(objtypeSelect).destroy();
+        choicesInstances.delete(objtypeSelect);
+      }
+      if (choicesInstances.has(objnameSelect)) {
+        choicesInstances.get(objnameSelect).destroy();
+        choicesInstances.delete(objnameSelect);
+      }
+
+      if (!schema) return;
+
+      const objTypes = await fetchObjectTypes(schema);
+      objTypes.forEach(type => {
+        const opt = document.createElement('option');
+        opt.value = type;
+        opt.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+        objtypeSelect.appendChild(opt);
+      });
+      objtypeSelect.disabled = false;
+
+      initChoices(objtypeSelect);
+      initChoices(objnameSelect);
+    }
+
+    async function onObjTypeChange(event) {
+      const row = event.target.closest('tr');
+      const objtype = event.target.value;
+      const schema = row.querySelector('.schema').value;
+
+      const objnameSelect = row.querySelector('.objname');
+      objnameSelect.innerHTML = '<option value="">--Select Object Name--</option>';
+      objnameSelect.disabled = true;
+
+      if (choicesInstances.has(objnameSelect)) {
+        choicesInstances.get(objnameSelect).destroy();
+        choicesInstances.delete(objnameSelect);
+      }
+
+      if (!schema || !objtype) return;
+
+      const names = await fetchObjectNames(schema, objtype);
+      names.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        objnameSelect.appendChild(opt);
+      });
+      objnameSelect.disabled = false;
+
+      initChoices(objnameSelect);
+    }
+
+    function addListeners(row) {
+      const schemaSelect = row.querySelector('.schema');
+      const objtypeSelect = row.querySelector('.objtype');
+
+      schemaSelect.addEventListener('change', onSchemaChange);
+      objtypeSelect.addEventListener('change', onObjTypeChange);
+
+      initChoices(schemaSelect);
+      initChoices(objtypeSelect);
+      const objnameSelect = row.querySelector('.objname');
+      initChoices(objnameSelect);
+    }
+
+    document.getElementById('addRowBtn').addEventListener('click', () => {
+      const newRow = document.createElement('tr');
+
+      newRow.innerHTML = `
+        <td>
+          <select name="schema_${rowCount}" class="schema" required>
+            <option value="">--Select Schema--</option>
+            {% for schema in schemas %}
+              <option value="{{ schema }}">{{ schema }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td>
+          <select name="objtype_${rowCount}" class="objtype" required disabled>
+            <option value="">--Select Object Type--</option>
+          </select>
+        </td>
+        <td>
+          <select name="objname_${rowCount}" class="objname" required disabled>
+            <option value="">--Select Object Name--</option>
+          </select>
+        </td>
+      `;
+
+      objTable.appendChild(newRow);
+      addListeners(newRow);
+      rowCount++;
+    });
+
+    addListeners(objTable.rows[0]);
+
+    document.getElementById('objForm').addEventListener('submit', function(e) {
+      for (let i = 0; i < rowCount; i++) {
+        const schema = this.elements[`schema_${i}`];
+        const objtype = this.elements[`objtype_${i}`];
+        const objname = this.elements[`objname_${i}`];
+
+        if (!schema || !objtype || !objname) continue;
+
+        if (!schema.value || !objtype.value || !objname.value) {
+          alert(`Please select all fields in row ${i + 1}`);
+          e.preventDefault();
+          return false;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

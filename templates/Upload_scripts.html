@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit DML Script</title>
+  <style>
+    /* Reset and base styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #2c3e50;
+      font-size: 1.2rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: #fff;
+      padding: 40px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 40px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 2.4rem;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #005ea1;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1.2rem;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-bottom: 24px;
+      resize: vertical;
+      min-height: 120px;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: #005aab;
+      box-shadow: 0 0 10px rgba(0, 90, 171, 0.5);
+      outline: none;
+    }
+    button[type="submit"] {
+      display: block;
+      width: 100%;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 16px 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,120,215,0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 10px;
+    }
+    button[type="submit"]:hover {
+      background-color: #005ea1;
+      box-shadow: 0 8px 26px rgba(0,94,161,0.7);
+    }
+
+
+    /* Upload Files Button */
+    #uploadBtn {
+      display: inline-block;
+      background-color: #0078d7;
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0, 120, 215, 0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-bottom: 20px;
+    }
+    #uploadBtn:hover {
+      background-color: #005ea1;
+      box-shadow: 0 8px 26px rgba(0, 94, 161, 0.7);
+    }
+
+
+    /* File Table Container */
+    #fileTableContainer {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 20px 24px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 20px;
+      display: none;
+      overflow-x: auto; /* horizontal scroll if narrow */
+    }
+
+
+    /* File Table Styling */
+    #fileTable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.15rem;
+      color: #2c3e50;
+      table-layout: fixed;
+    }
+
+
+    #fileTable thead tr {
+      border-bottom: 2px solid #005ea1;
+    }
+
+
+    #fileTable thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+      color: #005ea1;
+    }
+
+
+    #fileTable tbody tr {
+      border-bottom: 1px solid #e0e6ed;
+      transition: background-color 0.2s ease;
+    }
+
+
+    #fileTable tbody tr:hover {
+      background-color: #f0f6fc;
+    }
+
+
+    #fileTable tbody td {
+      padding: 8px 12px;
+      vertical-align: top;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    /* File content cell styling */
+    .file-content {
+      max-height: 150px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 8px;
+      font-family: monospace, monospace;
+      font-size: 1rem;
+      white-space: pre-wrap; /* preserve whitespace and line breaks */
+      border-radius: 6px;
+    }
+
+
+    /* Dropdown styling */
+    #fileTable select {
+      font-size: 1.1rem;
+      padding: 6px 12px;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      cursor: pointer;
+    }
+    #fileTable select:focus {
+      border-color: #005aab;
+      box-shadow: 0 0 10px rgba(0, 90, 171, 0.5);
+      outline: none;
+    }
+
+
+    /* Git Commit Checkbox Container */
+    #gitCommitContainer {
+      margin-top: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 1.25rem;
+      color: #2c3e50;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      display: none; /* hidden by default, shown by JS */
+    }
+
+
+    #gitCommitContainer label {
+      cursor: pointer;
+    }
+
+
+    #gitCommitCheckbox {
+      margin-right: 12px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+
+    /* Migrate Button */
+    #migrateBtn {
+      display: none; /* hidden initially */
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 16px 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 30px;
+    }
+    #migrateBtn:hover {
+      background-color: #218838;
+      box-shadow: 0 8px 26px rgba(33, 136, 56, 0.7);
+    }
+
+
+    /* Responsive adjustments */
+    @media (max-width: 800px) {
+      .container {
+        padding: 30px 20px;
+        max-width: 100%;
+      }
+      h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+      label {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+      input[type="text"],
+      textarea {
+        font-size: 1.1rem;
+        padding: 12px 14px;
+        margin-bottom: 20px;
+      }
+      button[type="submit"], #uploadBtn, #migrateBtn {
+        font-size: 1.2rem;
+        padding: 14px 0;
+      }
+      #fileTable thead th,
+      #fileTable tbody td {
+        padding: 10px 12px;
+        font-size: 1rem;
+      }
+      #gitCommitContainer {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Submit DML Script</h2>
+    <form method="post" action="/dml_upload" enctype="multipart/form-data" id="dmlForm">
+
+      <!-- Hidden fields for credentials -->
+      <input type="hidden" name="host" value="{{ host }}">
+      <input type="hidden" name="port" value="{{ port }}">
+      <input type="hidden" name="dbname" value="{{ dbname }}">
+      <input type="hidden" name="user" value="{{ user }}">
+      <input type="hidden" name="password" value="{{ password }}">
+
+      <input type="hidden" name="github_token" value="{{ github_token }}">
+      <input type="hidden" name="github_repo" value="{{ github_repo }}">
+      <input type="hidden" name="github_org" value="{{ github_org }}">
+      <input type="hidden" name="github_branch" value="{{ github_branch }}">
+
+      <!-- If you have CRnumber -->
+      <input type="hidden" name="CRnumber" value="{{ CRnumber }}">
+
+      <!-- Hidden input for file count -->
+      <input type="hidden" name="file_count" id="file_count" value="0" />
+
+      <!-- Hidden input container for script types -->
+      <div id="dynamicFileInputs"></div>
+
+      <!-- Hidden file input for uploads -->
+      <input id="fileInput" type="file" name="files" accept=".sql,.txt" multiple style="display:none;" />
+
+      <!-- File Table Container -->
+      <div id="fileTableContainer">
+        <table id="fileTable" aria-label="Uploaded Files Table">
+          <thead>
+            <tr>
+              <th style="width: 20%;">File Name</th>
+              <th style="width: 55%;">File Content</th>
+              <th style="width: 25%;">Script Type</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Git Commit Checkbox Container -->
+      <div id="gitCommitContainer">
+        <label>
+          <input type="checkbox" id="gitCommitCheckbox" name="do_git_commit" />
+          Do Git Commit
+        </label>
+      </div>
+
+      <!-- Migrate Button -->
+      <button type="submit" id="migrateBtn">Migrate</button>
+    </form>
+
+    <!-- Upload Files Button -->
+    <button id="uploadBtn" type="button">Upload Files</button>
+  </div>
+
+  <script>
+    const showGitCommitCheckbox = {{ do_git_commit | default('false') }};
+    let gitCommitDefault = true;  // Default checked state, can override as needed
+
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const fileTableContainer = document.getElementById('fileTableContainer');
+    const fileTableBody = document.querySelector('#fileTable tbody');
+    const gitCommitContainer = document.getElementById('gitCommitContainer');
+    const gitCommitCheckbox = document.getElementById('gitCommitCheckbox');
+    const dynamicFileInputs = document.getElementById('dynamicFileInputs');
+    const fileCountInput = document.getElementById('file_count');
+    const migrateBtn = document.getElementById('migrateBtn');
+
+    // Show or hide Git Commit checkbox based on backend input
+    if(showGitCommitCheckbox === true || showGitCommitCheckbox === 'true'){
+      gitCommitContainer.style.display = 'flex';
+      gitCommitCheckbox.checked = gitCommitDefault;
+    }
+
+    // Show file picker when upload button clicked
+    uploadBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+      const files = fileInput.files;
+      if(files.length === 0) {
+        fileTableContainer.style.display = 'none';
+        dynamicFileInputs.innerHTML = '';
+        fileCountInput.value = 0;
+        migrateBtn.style.display = 'none';
+        return;
+      }
+
+      fileTableBody.innerHTML = '';
+      dynamicFileInputs.innerHTML = '';
+      migrateBtn.style.display = 'none'; // hide migrate while loading files
+
+      // Helper function to read file content asynchronously
+      function readFileContent(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error);
+          reader.readAsText(file);
+        });
+      }
+
+      // Process all files sequentially
+      (async () => {
+        for(let i=0; i<files.length; i++) {
+          const file = files[i];
+          const content = await readFileContent(file);
+
+          const tr = document.createElement('tr');
+
+          // File Name cell
+          const tdFileName = document.createElement('td');
+          tdFileName.textContent = file.name;
+          tdFileName.style.padding = '8px';
+          tr.appendChild(tdFileName);
+
+          // File Content cell
+          const tdFileContent = document.createElement('td');
+          tdFileContent.style.padding = '8px';
+
+          const contentDiv = document.createElement('div');
+          contentDiv.classList.add('file-content');
+          contentDiv.textContent = content;
+          tdFileContent.appendChild(contentDiv);
+          tr.appendChild(tdFileContent);
+
+          // Script Type cell
+          const tdScriptType = document.createElement('td');
+          tdScriptType.style.padding = '8px';
+          const select = document.createElement('select');
+          ['DDL', 'DML', 'TCL', 'DCL'].forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            if(type === 'DML') option.selected = true;
+            select.appendChild(option);
+          });
+          tdScriptType.appendChild(select);
+          tr.appendChild(tdScriptType);
+
+          fileTableBody.appendChild(tr);
+
+          // Hidden input for script type
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = `script_type_${i}`;
+          hiddenInput.value = select.value;
+          dynamicFileInputs.appendChild(hiddenInput);
+
+          select.addEventListener('change', () => {
+            hiddenInput.value = select.value;
+          });
+        }
+
+        // Update hidden file count input
+        fileCountInput.value = files.length;
+        fileTableContainer.style.display = 'block';
+        migrateBtn.style.display = 'block'; // show migrate button now
+      })();
+    });
+  </script>
+</body>
+</html>

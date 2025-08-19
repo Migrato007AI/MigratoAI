@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Deployment Selection</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #eef2f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    width: 700px;
+    max-width: 95vw;
+    padding: 30px 40px;
+  }
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 700;
+    font-size: 28px;
+  }
+  form {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .column {
+    flex: 1;
+    min-width: 280px;
+  }
+  .column h3 {
+    font-size: 20px;
+    color: #34495e;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+  label:hover {
+    color: #3498db;
+  }
+  input[type="radio"] {
+    margin-right: 12px;
+    accent-color: #3498db; /* modern browsers */
+    width: 18px;
+    height: 18px;
+  }
+  button {
+    margin-top: 30px;
+    width: 100%;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background-color: #3498db;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #217dbb;
+  }
+  /* Responsive for smaller screens */
+  @media (max-width: 600px) {
+    form {
+      flex-direction: column;
+      gap: 30px;
+    }
+    button {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Select Deployment Type</h2>
+    <form id="deploymentForm" method="POST" action="/handle_deployment">
+      <input type="hidden" name="SYNAPSE_TOKEN" value="{{ SYNAPSE_TOKEN }}">
+      <input type="hidden" name="WORKSPACE_TOKEN" value="{{ WORKSPACE_TOKEN }}">
+      <div id="formColumns" style="display:flex; gap: 40px; flex-wrap: wrap;"></div>
+    </form>
+    <button type="submit" form="deploymentForm">Proceed</button>
+  </div>
+
+  <script>
+    // Simulated resource data sent from backend as JavaScript variable
+    const resource = {{ resource | tojson | safe }};
+
+    // Function to group resources by type (case insensitive)
+    function groupResourcesByType(resources) {
+      const groups = {};
+      resources.forEach(r => {
+        const type = r.resourcetype.toLowerCase();
+        if (!groups[type]) {
+          groups[type] = [];
+        }
+        groups[type].push(r);
+      });
+      return groups;
+    }
+
+    // Render function to create the columns for each resource group
+    function renderResourceColumns(groups) {
+      const container = document.getElementById('formColumns');
+      container.innerHTML = '';
+
+      // Map resource types to display names and filter keys
+      const displayNames = {
+        database: 'Databases',
+        etl: 'ETL / ELT Tools'
+      };
+
+      // For each resource type, create a column with radio inputs
+      for (const [type, items] of Object.entries(groups)) {
+        if (items.length === 0) continue;
+        const colDiv = document.createElement('div');
+        colDiv.className = 'column';
+
+        const heading = document.createElement('h3');
+        heading.textContent = displayNames[type] || type;
+        colDiv.appendChild(heading);
+
+        items.forEach(res => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = 'deployment';
+          input.value = `${res.resourcename} Deployment`;
+          label.appendChild(input);
+
+          const labelText = document.createTextNode(` ${res.resourcename} Deployment`);
+          label.appendChild(labelText);
+
+          colDiv.appendChild(label);
+        });
+
+        container.appendChild(colDiv);
+      }
+    }
+
+    // Group resources and render
+    const groupedResources = groupResourcesByType(resource);
+    renderResourceColumns(groupedResources);
+  </script>
+</body>
+</html>

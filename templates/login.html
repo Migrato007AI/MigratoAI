@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login Page</title>
+
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #eef2f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  .container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    width: 500px;
+    max-width: 95vw;
+    padding: 30px 40px;
+    box-sizing: border-box;
+  }
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 700;
+    font-size: 28px;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  .radio-group {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 30px;
+  }
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+  .radio-group label:hover {
+    color: #3498db;
+  }
+  .radio-group input[type="radio"] {
+    margin-right: 12px;
+    accent-color: #3498db;
+    width: 18px;
+    height: 18px;
+  }
+  label[for] {
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 8px;
+  }
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 6px #3498db;
+  }
+  button {
+    margin-top: 10px;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background-color: #3498db;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #217dbb;
+  }
+  .hidden {
+    display: none;
+  }
+  .admin-btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  .admin-btn-group button {
+    flex: 1;
+    background-color: #3498db;
+  }
+  .admin-btn-group button:hover {
+    background-color: #217dbb;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form action="/login" method="post" id="loginForm" novalidate>
+      <input type="hidden" id="flag" name="flag" value="0" />
+      <div class="radio-group" role="radiogroup" aria-label="Select login role">
+        <input type="radio" id="loginUser" name="role" value="user" />
+        <label for="loginUser">Login as User</label>
+
+        <input type="radio" id="loginAdmin" name="role" value="admin" />
+        <label for="loginAdmin">Login as Admin</label>
+      </div>
+
+      <!-- User SSO Form -->
+      <div id="userForm" class="hidden" aria-hidden="true">
+        <label for="Username">Username</label>
+        <input type="text" id="Username" name="Username" placeholder="Enter your username"  />
+
+        <label for="ProjectName">Project Name</label>
+            <select id="ProjectName" name="ProjectName" required>
+            <option value="" disabled selected>Select a project</option>
+                {% for pname in projectnames %}
+                    <option value="{{ pname }}">{{ pname }}</option>
+                {% endfor %}
+            </select>
+        <button type="submit" aria-label="Sign in as user using Single Sign-On">Sign in with Single Sign-On</button>
+      </div>
+
+      <!-- Admin login form -->
+      <div id="adminForm" class="hidden" aria-hidden="true">
+        <label for="adminUsername">Username</label>
+        <input type="text" id="adminUsername" name="Adminusername" placeholder="Enter your username" />
+
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" name="Adminpassword" placeholder="Enter your password" />
+
+        <div class="admin-btn-group">
+          <button type="submit" id="adminSignIn">Sign In</button>
+          <button type="button" id="adminSignUpBtn">Sign Up</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+<script>
+  const loginUserRadio = document.getElementById('loginUser');
+  const loginAdminRadio = document.getElementById('loginAdmin');
+  const userForm = document.getElementById('userForm');
+  const adminForm = document.getElementById('adminForm');
+  const adminSignUpBtn = document.getElementById('adminSignUpBtn');
+  const loginForm = document.getElementById('loginForm');
+
+  function updateFormVisibility() {
+    if (loginUserRadio.checked) {
+      userForm.classList.remove('hidden');
+      userForm.setAttribute('aria-hidden', 'false');
+      adminForm.classList.add('hidden');
+      adminForm.setAttribute('aria-hidden', 'true');
+    } else if (loginAdminRadio.checked) {
+      adminForm.classList.remove('hidden');
+      adminForm.setAttribute('aria-hidden', 'false');
+      userForm.classList.add('hidden');
+      userForm.setAttribute('aria-hidden', 'true');
+    } else {
+      userForm.classList.add('hidden');
+      userForm.setAttribute('aria-hidden', 'true');
+      adminForm.classList.add('hidden');
+      adminForm.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  loginUserRadio.addEventListener('change', updateFormVisibility);
+  loginAdminRadio.addEventListener('change', updateFormVisibility);
+
+  
+  updateFormVisibility();
+
+  
+  adminSignUpBtn.addEventListener('click', () => {
+  const flagInput = document.getElementById('flag');
+  flagInput.value = '1';
+  loginForm.submit();
+});
+
+  
+  loginForm.addEventListener('submit', async function (e) {
+    const flagInput = document.getElementById('flag');
+        if (flagInput.value === '1') {
+        return; 
+  }
+    if (loginAdminRadio.checked) {
+
+      const adminUsernameInput = document.getElementById('adminUsername');
+      const adminPasswordInput = document.getElementById('adminPassword');
+
+      const username = adminUsernameInput.value.trim();
+      const password = adminPasswordInput.value;
+
+      if (!username || !password) {
+        alert('Please enter both username and password.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/admin/login', { // Adjust API endpoint as needed
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          alert('Login successful!');
+          loginForm.submit();
+        } else {
+          alert('Invalid username or password.');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('An error occurred during login. Please try again later.');
+      }
+    }
+    // User SSO form submits normally (no interception)
+  });
+</script>
+</body>
+</html>

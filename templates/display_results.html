@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Objects Status Table</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 1900px;
+      width: 100%;
+      background: white;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+    thead {
+      background-color: #0078d7;
+      color: white;
+      font-weight: 700;
+    }
+    th, td {
+      border: 1.5px solid #005ea1;
+      padding: 12px 15px;
+      text-align: left;
+      vertical-align: top;
+      word-wrap: break-word;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f2f8ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <h2>Objects Status Table</h2>
+  <table id="jsonTable">
+    <!-- Table will be generated dynamically -->
+  </table>
+
+  <!-- Finish button below the table -->
+  <div style="text-align: center; margin-top: 20px;">
+    <button id="finishBtn" style="padding: 10px 20px; font-size: 1rem; cursor: pointer;">
+      Finish
+    </button>
+  </div>
+</div>
+
+<script>
+  // Your existing code to render the table
+  const data = {{ results | tojson | safe }};
+  console.log('Data received:', data);
+
+  function generateTable(data) {
+    if (!data || data.length === 0) {
+      document.getElementById('jsonTable').innerHTML = '<tr><td>No data available</td></tr>';
+      return;
+    }
+
+    const allKeys = new Set();
+    data.forEach(obj => Object.keys(obj).forEach(key => allKeys.add(key)));
+    const keysArray = Array.from(allKeys);
+
+    let html = '<thead><tr>';
+    keysArray.forEach(key => {
+      html += `<th>${key}</th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    data.forEach(obj => {
+      html += '<tr>';
+      keysArray.forEach(key => {
+        let val = obj[key] !== undefined && obj[key] !== null? obj[key] : '';
+        if (typeof val === 'string' && val.includes('<a ')) {
+        html += `<td>${val}</td>`;
+          } 
+          else {
+            val = val.toString()
+                     .replace(/&/g, '&amp;')
+                     .replace(/</g, '&lt;')
+                     .replace(/>/g, '&gt;')
+                     .replace(/\n/g, '<br>');
+            html += `<td>${val}</td>`;
+        }
+       
+      });
+      html += '</tr>';
+    });
+
+    html += '</tbody>';
+    document.getElementById('jsonTable').innerHTML = html;
+  }
+
+  generateTable(data);
+
+  // Add click event listener for Finish button
+  document.getElementById('finishBtn').addEventListener('click', () => {
+    window.location.href = '/'; // redirect to index.html
+  });
+</script>
+</body>
+</html>

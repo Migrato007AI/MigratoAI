@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Project-Resource Dynamic Table</title>
+<style>
+  /* Reset some default styles */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7fa;
+    margin: 40px;
+    color: #333;
+  }
+
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  thead {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    color: white;
+  }
+
+  thead th {
+    padding: 14px 20px;
+    font-weight: 600;
+    text-align: left;
+    user-select: none;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #e1e8f0;
+    transition: background-color 0.3s ease;
+  }
+
+  tbody tr:hover {
+    background-color: #f0f4ff;
+  }
+
+  tbody td {
+    padding: 12px 20px;
+    vertical-align: middle;
+  }
+
+  select, input[type="text"] {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ccd0d5;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+  }
+
+  select:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 5px rgba(102,126,234,0.5);
+  }
+
+  input[type="checkbox"] {
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+
+  button {
+    background-color: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    margin: 20px 10px 0 0;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #5a6ddc;
+  }
+
+  .delete-btn {
+    background-color: #e74c3c;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .delete-btn:hover {
+    background-color: #c0392b;
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      margin: 20px;
+    }
+    thead th, tbody td {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    button {
+      width: 100%;
+      font-size: 15px;
+      padding: 12px 0;
+      margin: 10px 0 0 0;
+    }
+    .buttons-container {
+      justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h2>Project and Resource Management</h2>
+
+<form id="projectForm" method="POST" action="/Admin/ProjectResources">
+    
+  <table id="projectTable" aria-label="Project and Resource Table">
+    <thead>
+      <tr>
+        <th scope="col">ProjectName</th>
+        <th scope="col">ResourceName</th>
+        <th scope="col">Enable Git Commit</th>
+        <th scope="col">Git Org</th>
+        <th scope="col">Git Repo</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows inserted here dynamically -->
+    </tbody>
+  </table>
+
+  <div class="buttons-container">
+    <button type="button" id="addRowBtn" aria-label="Add new row">Add Row</button>
+    <button type="submit" id="submitBtn" aria-label="Complete the process">Complete the Process</button>
+  </div>
+  <input type="hidden" id="Adminusername" name="Adminusername" value="{{ Adminusername }}" />
+</form>
+
+<script>
+  // Backend projects data injected by Flask (make sure your backend passes 'projects' properly)
+  const backendDataFlat = {{ projects | tojson | safe }};
+
+  const tbody = document.querySelector("#projectTable tbody");
+  const form = document.getElementById("projectForm");
+
+  // Build project to resources map dynamically from backend data
+  const projectResourceMap = backendDataFlat.reduce((map, row) => {
+    if (!map[row.ProjectName]) map[row.ProjectName] = [];
+    if (!map[row.ProjectName].includes(row.ResourceName)) {
+      map[row.ProjectName].push(row.ResourceName);
+    }
+    return map;
+  }, {});
+
+  // Get unique list of projects for dropdown options
+  const allProjects = Object.keys(projectResourceMap).sort();
+
+  // Helper: Create dropdown with options and set selected value
+  function createDropdown(options, selectedValue) {
+    const select = document.createElement("select");
+    options.forEach(opt => {
+      const option = document.createElement("option");
+      option.value = opt;
+      option.textContent = opt;
+      if (opt === selectedValue) option.selected = true;
+      select.appendChild(option);
+    });
+    return select;
+  }
+
+  // Update resource dropdown options based on selected project
+  function updateResourceDropdown(projectSelect, resourceSelect) {
+    const selectedProject = projectSelect.value;
+    const resources = projectResourceMap[selectedProject] || [];
+
+    // Clear previous options
+    resourceSelect.innerHTML = "";
+
+    // Add new options
+    resources.forEach(resource => {
+      const option = document.createElement("option");
+      option.value = resource;
+      option.textContent = resource;
+      resourceSelect.appendChild(option);
+    });
+
+    // Select first if current selection not present or empty
+    if (!resources.includes(resourceSelect.value)) {
+      resourceSelect.value = resources[0] || "";
+    }
+  }
+
+  // Create a new row with optional data
+  function createRow(data = {}) {
+    const tr = document.createElement("tr");
+
+    // ProjectName dropdown cell
+    const tdProject = document.createElement("td");
+    const projectSelect = createDropdown(allProjects, data.ProjectName || allProjects[0]);
+    tdProject.appendChild(projectSelect);
+    tr.appendChild(tdProject);
+
+    // ResourceName dropdown cell
+    const tdResource = document.createElement("td");
+    const resourceSelect = document.createElement("select");
+    tdResource.appendChild(resourceSelect);
+    tr.appendChild(tdResource);
+
+    // Initialize resource dropdown based on project selection
+    updateResourceDropdown(projectSelect, resourceSelect);
+    if (data.ResourceName) {
+      resourceSelect.value = data.ResourceName;
+    }
+
+    // Update resource dropdown on project change
+    projectSelect.addEventListener("change", () => {
+      updateResourceDropdown(projectSelect, resourceSelect);
+    });
+
+    // Enable Git Commit checkbox cell
+    const tdEnableGit = document.createElement("td");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    // Interpret GitCommitRequired as boolean: consider truthy values
+    checkbox.checked = !!data.GitCommitRequired;
+    tdEnableGit.appendChild(checkbox);
+    tr.appendChild(tdEnableGit);
+
+    // Git Org input cell
+    const tdGitOrg = document.createElement("td");
+    const gitOrgInput = document.createElement("input");
+    gitOrgInput.type = "text";
+    gitOrgInput.value = data.OrganizationName || "";
+    tdGitOrg.appendChild(gitOrgInput);
+    tr.appendChild(tdGitOrg);
+
+    // Git Repo input cell
+    const tdGitRepo = document.createElement("td");
+    const gitRepoInput = document.createElement("input");
+    gitRepoInput.type = "text";
+    gitRepoInput.value = data.RepoName || "";
+    tdGitRepo.appendChild(gitRepoInput);
+    tr.appendChild(tdGitRepo);
+
+    // Actions cell with Delete button
+    const tdActions = document.createElement("td");
+    const deleteBtn = document.createElement("button");
+    deleteBtn.classList.add("delete-btn");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.type = "button";
+    deleteBtn.addEventListener("click", () => tr.remove());
+    tdActions.appendChild(deleteBtn);
+    tr.appendChild(tdActions);
+
+    tbody.appendChild(tr);
+  }
+
+  // Before form submit, assign proper names to inputs for backend parsing
+  function prepareFormData() {
+    const rows = tbody.querySelectorAll("tr");
+    rows.forEach((tr, index) => {
+      // ProjectName select
+      const projectSelect = tr.cells[0].querySelector("select");
+      projectSelect.name = `projects[${index}].ProjectName`;
+
+      // ResourceName select
+      const resourceSelect = tr.cells[1].querySelector("select");
+      resourceSelect.name = `projects[${index}].ResourceName`;
+
+      // Enable Git Commit checkbox
+      const checkbox = tr.cells[2].querySelector("input[type=checkbox]");
+      checkbox.name = `projects[${index}].GitCommitRequired`;
+
+      // Git Org input
+      const gitOrgInput = tr.cells[3].querySelector("input[type=text]");
+      gitOrgInput.name = `projects[${index}].OrganizationName`;
+
+      // Git Repo input
+      const gitRepoInput = tr.cells[4].querySelector("input[type=text]");
+      gitRepoInput.name = `projects[${index}].RepoName`;
+
+      // For checkbox, ensure unchecked values are sent by adding a hidden input
+      // Remove old hidden input if exists
+      const hiddenInputName = `projects[${index}].GitCommitRequired`;
+      const existingHidden = tr.querySelector(`input[type=hidden][name="${hiddenInputName}"]`);
+      if (existingHidden) existingHidden.remove();
+
+      if (!checkbox.checked) {
+        // Insert hidden input with value "false" before checkbox
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = hiddenInputName;
+        hiddenInput.value = "false";
+        tr.cells[2].insertBefore(hiddenInput, checkbox);
+      }
+    });
+  }
+
+  // Initialize table rows from backend data
+  if (backendDataFlat.length) {
+    backendDataFlat.forEach(rowData => createRow(rowData));
+  } else {
+    createRow(); // If no data, add one empty row
+  }
+
+  // Add new row button handler
+  document.getElementById("addRowBtn").addEventListener("click", () => {
+    createRow();
+  });
+
+  // Form submit handler to prepare input names
+  form.addEventListener("submit", (event) => {
+    prepareFormData();
+    // You can add validation here if needed
+  });
+</script>
+
+</body>
+</html>

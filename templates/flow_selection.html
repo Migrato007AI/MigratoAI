@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Select Deployment Flow</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script>
+    function onFlowChange() {
+      const flow = document.querySelector('input[name="flow"]:checked').value;
+      document.getElementById('source_git').style.display = flow.includes('Git-to') ? 'block' : 'none';
+      document.getElementById('source_synapse').style.display = flow.includes('Workspace-to') ? 'block' : 'none';
+
+      document.getElementById('dest_git').style.display = flow.includes('Git-to-Git') ? 'block' : 'none';
+      document.getElementById('dest_synapse').style.display = flow.includes('to-Workspace') ? 'block' : 'none';
+    }
+    window.onload = onFlowChange;
+  </script>
+</head>
+<body class="container py-4">
+  <h1>Select Deployment Flow</h1>
+  <form method="POST" action="{{ url_for('handle_flow_selection') }}">
+    <div class="mb-3">
+      <label class="form-label">Choose deployment flow:</label><br />
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="flow" id="flow1" value="Git-to-Git" checked onchange="onFlowChange()" />
+        <label class="form-check-label" for="flow1">Git to Git</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="flow" id="flow2" value="Git-to-Workspace" onchange="onFlowChange()" />
+        <label class="form-check-label" for="flow2">Git to Workspace</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="flow" id="flow3" value="Workspace-to-Workspace" onchange="onFlowChange()" />
+        <label class="form-check-label" for="flow3">Workspace to Workspace</label>
+      </div>
+    </div>
+
+    <!-- Source GitHub info -->
+    <div id="source_git" style="display:none" class="border p-3 mb-3">
+      <h5>Source GitHub Info</h5>
+      <div class="mb-3">
+        <label for="source_git_org" class="form-label">GitHub Org/User</label>
+        <input type="text" class="form-control" id="source_git_org" name="source_git_org" />
+      </div>
+      <div class="mb-3">
+        <label for="source_git_pat" class="form-label">GitHub PAT Token</label>
+        <input type="password" class="form-control" id="source_git_pat" name="source_git_pat" />
+      </div>
+      <div class="mb-3">
+        <label for="source_git_base_path" class="form-label">Base Path</label>
+        <input type="text" class="form-control" id="source_git_base_path" name="source_git_base_path" />
+      </div>
+    </div>
+
+    <!-- Source Synapse info -->
+    <div id="source_synapse" style="display:none" class="border p-3 mb-3">
+      <h5>Source Synapse Info</h5>
+      <div class="mb-3">
+        <label for="sourceTenantId" class="form-label">Tenant ID</label>
+        <input type="text" class="form-control" id="sourceTenantId" name="sourceTenantId" />
+      </div>
+      <div class="mb-3">
+        <label for="sourceClientId" class="form-label">Client ID</label>
+        <input type="text" class="form-control" id="sourceClientId" name="sourceClientId" />
+      </div>
+      <div class="mb-3">
+        <label for="sourceClientSecret" class="form-label">Client Secret</label>
+        <input type="password" class="form-control" id="sourceClientSecret" name="sourceClientSecret" />
+      </div>
+      <div class="mb-3">
+        <label for="sourceWorkspace" class="form-label">Workspace</label>
+        <input type="text" class="form-control" id="sourceWorkspace" name="sourceWorkspace" />
+      </div>
+    </div>
+
+    <!-- Destination GitHub info -->
+    <div id="dest_git" style="display:none" class="border p-3 mb-3">
+      <h5>Destination GitHub Info</h5>
+      <div class="mb-3">
+        <label for="dest_git_org" class="form-label">GitHub Org/User</label>
+        <input type="text" class="form-control" id="dest_git_org" name="dest_git_org" />
+      </div>
+      <div class="mb-3">
+        <label for="dest_git_pat" class="form-label">GitHub PAT Token</label>
+        <input type="password" class="form-control" id="dest_git_pat" name="dest_git_pat" />
+      </div>
+      <div class="mb-3">
+        <label for="dest_git_base_path" class="form-label">Base Path</label>
+        <input type="text" class="form-control" id="dest_git_base_path" name="dest_git_base_path" />
+      </div>
+    </div>
+
+    <!-- Destination Synapse info -->
+    <div id="dest_synapse" style="display:none" class="border p-3 mb-3">
+      <h5>Destination Synapse Info</h5>
+      <div class="mb-3">
+        <label for="destTenantId" class="form-label">Tenant ID</label>
+        <input type="text" class="form-control" id="destTenantId" name="destTenantId" />
+      </div>
+      <div class="mb-3">
+        <label for="destClientId" class="form-label">Client ID</label>
+        <input type="text" class="form-control" id="destClientId" name="destClientId" />
+      </div>
+      <div class="mb-3">
+        <label for="destClientSecret" class="form-label">Client Secret</label>
+        <input type="password" class="form-control" id="destClientSecret" name="destClientSecret" />
+      </div>
+      <div class="mb-3">
+        <label for="destWorkspace" class="form-label">Workspace</label>
+        <input type="text" class="form-control" id="destWorkspace" name="destWorkspace" />
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="crNumber" class="form-label">Change Request Number (CR Number)</label>
+      <input type="text" class="form-control" id="crNumber" name="crNumber" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Continue</button>
+  </form>
+</body>
+</html>

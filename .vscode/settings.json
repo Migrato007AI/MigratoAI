@@ -1,0 +1,32 @@
+{
+    "sqltools.connections": [
+        {
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true
+            },
+            "previewLimit": 50,
+            "server": "myspm-westus2-dev-app-01-sqlserver01.database.windows.net",
+            "port": 1433,
+            "askForPassword": true,
+            "driver": "MSSQL",
+            "name": "dev",
+            "database": "myspm-westus2-dev-app-01-db",
+            "username": "hm3878"
+        },
+        {
+            "previewLimit": 50,
+            "server": "spm-westus2-nprod-direct-etl.postgres.database.azure.com",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "name": "qa postgres",
+            "database": "varicent-qa-direct",
+            "username": "hm3878@att.com"
+        }
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": [],
+    "appService.showBuildDuringDeployPrompt": false
+}

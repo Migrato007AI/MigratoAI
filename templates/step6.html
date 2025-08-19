@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Step 6: Destination DB Credentials & Migration</title>
+  <style>
+    /* Reset and base styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      color: #2c3e50;
+      font-size: 1.2rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      padding: 40px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 40px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 2.4rem;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #005ea1;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1.2rem;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 6px;
+      margin-bottom: 24px;
+      box-sizing: border-box;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      border-color: #005aab;
+      box-shadow: 0 0 10px rgba(0, 90, 171, 0.5);
+      outline: none;
+    }
+    button {
+      display: block;
+      width: 100%;
+      background-color: #0078d7;
+      color: white;
+      border: none;
+      padding: 16px 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,120,215,0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #005ea1;
+      box-shadow: 0 8px 26px rgba(0,94,161,0.7);
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+        max-width: 100%;
+      }
+      h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+      label {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+      input[type="text"],
+      input[type="password"],
+      input[type="number"],
+      select {
+        font-size: 1.1rem;
+        padding: 12px 14px;
+        margin-bottom: 20px;
+      }
+      button {
+        font-size: 1.2rem;
+        padding: 14px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Enter Destination Database Credentials</h2>
+    <form method="post" action="/step6">
+      <input type="hidden" name="CRnumber" value="{{ CRnumber }}">
+      <input type="hidden" name="github_repo" value="{{ github_repo }}">
+      <input type="hidden" name="github_branch" value="{{ github_branch }}">
+      <input type="hidden" name="github_token" value="{{ github_token }}">
+
+      <label for="host">Host:</label>
+      <select id="host" name="host" required>
+        <option value="" disabled selected>Select Host</option>
+        <!-- Example hosts, replace with dynamic values -->
+        <option value="spm-westus2-nprod-direct-etl.postgres.database.azure.com">spm-westus2-nprod-direct-etl.postgres.database.azure.com</option>
+        <option value="spm-eastus-nprod-direct-etl.postgres.database.azure.com">spm-eastus-nprod-direct-etl.postgres.database.azure.com</option>
+      </select>
+
+      <label for="port">Port:</label>
+      <input type="number" id="port" name="port" value="5432" required>
+
+      <label for="dbname">DB Name:</label>
+      <select id="dbname" name="dbname" required>
+        <option value="" disabled selected>Select Database</option>
+        <!-- Example databases, replace with dynamic values -->
+        <option value="varicent-dev-direct">varicent-dev-direct</option>
+        <option value="varicent-qa-direct">varicent-qa-direct</option>
+        <option value="varicent-uat-direct">varicent-uat-direct</option>
+      </select>
+
+      <label for="user">Username:</label>
+      <input type="text" id="user" name="user" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Start Migration</button>
+    </form>
+  </div>
+</body>
+</html>

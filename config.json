@@ -1,0 +1,10 @@
+{
+    "STORAGE_ACCOUNT_NAME": "myspmwestus2devapp01st",
+    "STORAGE_ACCOUNT_KEY_BASE64": "NwnirQ8y2/aT1LQUw4g3GuF+k4gcp9CJY5kQWuajn0Iz6uguvpBGCRQMHbpYfW9xX88maczCmT8OFsvjB/S0Xg==",
+    "STORAGE_CONTAINER_NAME": "migratoai",
+    "CONFIG_DB_HOST": "spm-westus2-nprod-direct-etl.postgres.database.azure.com",
+    "CONFIG_DB_PORT": 5432,
+    "CONFIG_DB_NAME": "varicent-dev-direct",
+    "CONFIG_DB_USER": "synapse_user",
+    "CONFIG_DB_PASSWORD": "jUh@w8s0F4$rb6&f"
+}

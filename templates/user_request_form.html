@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Request Access Form</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .request-form {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    width: 320px;
+    text-align: center;
+  }
+
+  .request-form h2 {
+    margin-bottom: 25px;
+    color: #333;
+  }
+
+  .request-form label {
+    display: block;
+    text-align: left;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .request-form input[type="text"] {
+    width: 100%;
+    padding: 14px 15px;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+
+  .request-form input[type="text"]:focus {
+    border-color: #0070f3;
+    outline: none;
+  }
+
+  .request-form button {
+    background: #0070f3;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 0;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .request-form button:hover {
+    background: #005bb5;
+  }
+</style>
+</head>
+<body>
+
+<form class="request-form" method="post" action="/user_request_form">
+  <h2>Request Access</h2>
+
+  <label for="username">Username</label>
+  <input
+    type="text"
+    id="username"
+    name="username"
+    readonly
+    value=""
+    placeholder="Enter username"
+  />
+
+  <label for="projectname">Project Name</label>
+  <input
+    type="text"
+    id="projectname"
+    name="projectname"
+    readonly
+    value=""
+    placeholder="Enter project name"
+  />
+
+  <button type="submit">Request Access</button>
+</form>
+
+<script>
+  // Replace these variables with backend-rendered values in your template engine
+  const username = "{{ username }}";      // Example: "john_doe"
+  const projectname = "{{ projectname }}"; // Example: "ProjectX"
+
+  // Populate input values
+  document.getElementById('username').value = username;
+  document.getElementById('projectname').value = projectname;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Migration_app.py Architecture Diagram</title>
+<style>
+  body {
+    margin: 0; padding: 0;
+    background: #f6f8fa;
+    font-family: Arial, sans-serif;
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .container {
+    width: 960px; 
+    height: 900px; /* increased height */
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,120,212,0.25);
+    padding: 12px 20px 20px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.7rem;
+  }
+
+  /* Header */
+  .azure-header {
+    background: linear-gradient(90deg, #0078d4 0%, #00c6fb 100%);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 2px 8px #ccc;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    flex-shrink: 0;
+  }
+  .azure-header img {
+    width: 32px; height: 32px;
+  }
+  .app-name {
+    display: flex; flex-direction: column;
+  }
+  .app-name .title {
+    font-weight: 700; font-size: 1.1rem; line-height: 1.1;
+  }
+  .app-name .tagline {
+    font-weight: 500; font-size: 0.65rem; opacity: 0.85;
+    letter-spacing: 0.3px;
+  }
+
+  /* Grid container for steps 1-5 */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 1fr;
+    gap: 8px 12px;
+    flex-grow: 1;
+    overflow: hidden;
+    height: 80%;
+  }
+
+  /* Step container */
+  .diagram-step {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px #ccc;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+  }
+  .step-title {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #0078d4;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+  }
+
+  .diagram {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .icon {
+    width: 36px !important;
+    height: 36px !important;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .arrow {
+    font-size: 1.1rem;
+    color: #0078d4;
+    user-select: none;
+  }
+
+  .icon-box {
+    width: 60px !important;
+    height: 38px !important;
+    background: #e6e6e6;
+    border-radius: 8px;
+    border: 1.8px solid #0078d4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.6rem;
+    color: #0078d4;
+    text-align: center;
+    padding: 2px 4px;
+    box-sizing: border-box;
+  }
+
+  .diagram-step img:not(.icon) {
+    border-radius: 6px;
+    box-shadow: 0 1px 4px #ccc;
+    max-width: 100px;
+    max-height: 55px;
+    object-fit: contain;
+  }
+
+  .caption {
+    font-size: 0.6rem;
+    color: #0078d4;
+    text-align: center;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  .icons-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-width: 280px;
+  }
+
+  .code-compare-img {
+    max-width: 160px;
+    max-height: 55px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px #ccc;
+    object-fit: contain;
+  }
+
+  /* Step 6 full width styling */
+  .step6-fullwidth {
+    width: 100%;
+    padding: 10px 14px;
+  }
+  .step6-fullwidth .step-title {
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    color: #0078d4;
+    font-weight: 700;
+    white-space: normal;
+  }
+  .step6-content {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+  .sanity-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 160px;
+  }
+  .sanity-inputs > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .sanity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    box-shadow: 0 1px 6px #ccc;
+    object-fit: contain;
+  }
+  .sanity-icon-box {
+    width: 140px !important;
+    height: 28px !important;
+    font-size: 0.6rem !important;
+    border-radius: 8px !important;
+    border: 1.8px solid #0078d4 !important;
+    color: #0078d4 !important;
+    font-weight: 700 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 2px 6px !important;
+    box-sizing: border-box;
+  }
+  .sanity-sequence {
+    display:flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+    min-width: 170px;
+  }
+  .sanity-sequence > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sanity-sequence img {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    box-shadow: 0 1px 6px #ccc;
+    object-fit: contain;
+  }
+  .sanity-sequence .icon-box {
+    width: 140px !important;
+    height: 28px !important;
+    font-size: 0.6rem !important;
+  }
+  .sanity-downloads {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-left: 24px;
+    min-width: 180px;
+  }
+  .sanity-downloads > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sanity-downloads .icon-box {
+    width: 140px !important;
+    height: 32px !important;
+    font-size: 0.6rem !important;
+  }
+  .sanity-downloads .sanity-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    box-shadow: 0 1px 6px #ccc;
+    object-fit: contain;
+  }
+
+.step5and6-container {
+  display: flex;
+  gap: 8px;
+  height: 30%; /* remaining height */
+  box-sizing: border-box;
+}
+
+/* Step 5 styling: same height, width reduced by 100px */
+.diagram-step.step5 {
+  width: calc(50% - 50px); /* 100px less than half width */
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px #ccc;
+  font-size: 0.7rem;
+}
+
+/* Step 6 styling: same height, width increased by 100px */
+.diagram-step.step6-fullwidth {
+  width: calc(50% + 50px); /* 100px more than half width */
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px #ccc;
+  font-size: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="azure-header">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Microsoft_Azure_Logo.svg" alt="Azure Logo" />
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Chatbot Icon" />
+      <div class="app-name">
+        <div class="title">Migrato.AI</div>
+        <div class="tagline">Seamless Azure Migration</div>
+      </div>
+    </div>
+
+    <!-- Steps grid for Steps 1 to 5 -->
+    <div class="steps-grid">
+
+      <!-- Step 1 -->
+      <div class="diagram-step">
+        <p class="step-title">Step 1: Landing Page (Chatbot)</p>
+        <div class="diagram" style="gap: 6px;">
+          <img class="icon" src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Chatbot" />
+          <span class="arrow">&#8594;</span>
+          <img class="icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Microsoft_Azure_Logo.svg" alt="Azure" />
+          <div class="icons-group" style="margin-left: 6px;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img class="icon" src="https://logowik.com/content/uploads/images/azure-synapse-analytics6078.jpg" alt="Synapse" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="icon-box" style="display:none;">Synapse</div>
+              <div class="caption">Synapse</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img class="icon" src="https://images.squarespace-cdn.com/content/v1/56e5dce82b8dde4bafbf77cd/1526078978777-6S7B27KXNEO1QYSV87HI/ADF.png" alt="ADF" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="icon-box" style="display:none;">Azure Data Factory</div>
+              <div class="caption">ADF</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img class="icon" src="https://tse2.mm.bing.net/th/id/OIP.a_X7oDim5FsGCk0Ki7Dd9gHaFN?w=238&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="SQL Server Azure" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="icon-box" style="display:none;">SQL Server Azure</div>
+              <div class="caption">SQL Server</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img class="icon" src="https://tse4.mm.bing.net/th/id/OIP.xexJa3ZfX2ZGs98k3E2pFAHaD4?w=314&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="Postgres SQL Azure" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="icon-box" style="display:none;">Postgres SQL Azure</div>
+              <div class="caption">Postgres</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img class="icon" src="https://seeklogo.com/images/A/azure-databricks-logo-AB590543D3-seeklogo.com.png" alt="Databricks" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="icon-box" style="display:none;">Databricks</div>
+              <div class="caption">Databricks</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img class="icon" src="https://companieslogo.com/img/orig/SNOW-35164165.png?t=1634190631" alt="Snowflake" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="icon-box" style="display:none;">Snowflake</div>
+              <div class="caption">Snowflake</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="diagram-step">
+        <p class="step-title">Step 2: Azure SSO & Tenant/Subscription Selection</p>
+        <div class="diagram" style="gap: 6px;">
+          <img class="icon" src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Chatbot" />
+          <span class="arrow">&#8594;</span>
+          <img src="https://cdn.qrplanet.com/img/kb/5b4352bb6d961556373d88d0/kb/attachments/3jTwA1wx1U.png" alt="SSO" style="width: 90px; height: 60px; object-fit: contain; border-radius: 6px; box-shadow: 0 1px 6px #ccc;" />
+          <span class="arrow">&#8594;</span>
+          <div style="display: flex; gap: 6px; flex-wrap: nowrap;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img src="step2_source.jpg" alt="Source Selection" style="max-width: 80px; border-radius: 6px; box-shadow: 0 1px 6px #ccc;" />
+              <div class="caption">Source Tenant</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <img src="step2_destination.jpg" alt="Destination Selection" style="max-width: 80px; border-radius: 6px; box-shadow: 0 1px 6px #ccc;" />
+              <div class="caption">Destination Tenant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="diagram-step">
+        <p class="step-title">Step 3: Resource Selection (Manual & Automated)</p>
+        <div class="diagram" style="gap: 16px; flex-wrap: nowrap; justify-content: center; align-items: center;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <img src="Resource_selection_manual.jpg" alt="Manual Selection" style="max-width: 100px; border-radius: 6px; box-shadow: 0 1px 6px #ccc;" />
+            <div class="caption">Manual UI</div>
+          </div>
+          <img class="icon" src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Chatbot" />
+          <div style="display: flex; flex-direction: column; align-items: center; border-radius: 8px; padding: 5px 14px; background: #e6e6e6; border: 1.8px solid #0078d4; box-shadow: 0 1px 6px #ccc;">
+            <img src="https://adoption.azureedge.net/wp-content/uploads/2022/08/intelligent-document-processing-icon-1.png" alt="Document Reader" style="width: 28px; height: 28px;" />
+            <div style="display: flex; gap: 3px; margin: 4px 0;">
+              <img src="https://cdn-icons-png.flaticon.com/512/732/732221.png" alt="Word" style="width: 16px; height: 16px;" />
+              <img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="PDF" style="width: 16px; height: 16px;" />
+            </div>
+            <div class="caption" style="white-space: normal; max-width: 130px;">Auto-suggest from docs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="diagram-step">
+        <p class="step-title">Step 4: Source/Destination & Code Compare</p>
+        <div class="diagram" style="gap: 12px; flex-wrap: nowrap; justify-content: center; align-items: center;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <img class="icon" src="https://tse2.mm.bing.net/th/id/OIP.TwKMEkVZnD78-5VWeG6iLAAAAA?rs=1&pid=ImgDetMain&o=7&rm=3" alt="REST API" />
+            <div class="caption">REST API</div>
+          </div>
+          <span class="arrow">&#8594;</span>
+          <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+            <div class="icon-box" style="width: 110px; height: 30px; font-size: 0.55rem;">Fetch Source Code</div>
+            <div class="icon-box" style="width: 110px; height: 30px; font-size: 0.55rem;">Fetch Destination Code</div>
+          </div>
+          <span class="arrow">&#8594;</span>
+          <div style="display: flex; flex-direction: row; gap: 12px; align-items: center;">
+            <img class="icon" src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Chatbot" />
+            <div class="icon-box" style="width: 110px; height: 30px; font-size: 0.55rem; display: flex; align-items: center; justify-content: center;">Prettify Code</div>
+            <span class="arrow">&#8594;</span>
+            <img src="code_compare.jpg" alt="Code Compare" class="code-compare-img" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+    <div class="step5and6-container">
+      <div class="diagram-step step5">
+        <p class="step-title">Step 5: Migration Execution via REST API</p>
+        <div class="diagram" style="gap: 8px; justify-content: center; align-items: center;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="icon-box" style="width: 90px; height: 30px;">SOURCE</div>
+          </div>
+          <span class="arrow">&#8594;</span>
+          <img class="icon" src="https://tse2.mm.bing.net/th/id/OIP.TwKMEkVZnD78-5VWeG6iLAAAAA?rs=1&pid=ImgDetMain&o=7&rm=3" alt="REST API" />
+          <span class="arrow">&#8594;</span>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="icon-box" style="width: 100px; height: 30px;">DESTINATION</div>
+          </div>
+          <span class="arrow">&#8594;</span>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="Git" style="width: 18px; height: 18px; margin-bottom: 2px;" />
+            <div class="icon-box" style="width: 90px; height: 22px; font-size: 0.5rem; border-style: dashed;">Git Commit (Optional)</div>
+          </div>
+        </div>
+      </div>
+
+
+    <!-- Step 6: Sanity Check & Final Output full width -->
+    <div class="diagram-step step6-fullwidth">
+      <div class="step-title">Step 6: Sanity Check & Final Output</div>
+      <div class="step6-content">
+
+        <!-- Sanity Check Inputs -->
+        <div class="sanity-inputs">
+          <div>
+            <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="User" class="sanity-icon" />
+            <div class="icon-box sanity-icon-box">Sanity Checks (User Input)</div>
+          </div>
+          <div>
+            <img src="https://adoption.azureedge.net/wp-content/uploads/2022/08/intelligent-document-processing-icon-1.png" alt="Azure Document Reader" class="sanity-icon" />
+            <div class="icon-box sanity-icon-box">Sanity Checks (Azure Document Reader)</div>
+          </div>
+        </div>
+
+        <!-- Sanity Check Sequence -->
+        <div class="sanity-sequence">
+          <div>
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Chatbot" class="sanity-icon" />
+            <div class="icon-box sanity-icon-box">Perform Sanity on Resource</div>
+          </div>
+          <div>
+            <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Tick" class="sanity-icon" />
+            <div class="icon-box sanity-icon-box">Confirm Status</div>
+          </div>
+        </div>
+
+        <!-- Download Options -->
+        <div class="sanity-downloads">
+          <div>
+            <div class="icon-box sanity-icon-box">Download Backup File</div>
+            <img src="https://tse2.mm.bing.net/th/id/OIP.xqZAAfOObb9YHuD814Z1JwHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Blob Storage" class="sanity-icon" />
+            <img src="https://cdn-icons-png.flaticon.com/512/929/929564.png" alt="SAS Link" class="sanity-icon" />
+          </div>
+          <div>
+            <div class="icon-box sanity-icon-box">Download Source File</div>
+            <img src="https://tse2.mm.bing.net/th/id/OIP.xqZAAfOObb9YHuD814Z1JwHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Blob Storage" class="sanity-icon" />
+            <img src="https://cdn-icons-png.flaticon.com/512/929/929564.png" alt="SAS Link" class="sanity-icon" />
+          </div>
+          <div>
+            <div class="icon-box sanity-icon-box">Download Logs</div>
+            <img src="https://tse2.mm.bing.net/th/id/OIP.xqZAAfOObb9YHuD814Z1JwHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Blob Storage" class="sanity-icon" />
+            <img src="https://cdn-icons-png.flaticon.com/512/929/929564.png" alt="SAS Link" class="sanity-icon" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </div>
+
+  </div>
+</body>
+</html>
