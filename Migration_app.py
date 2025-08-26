@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template,redirect,url_for,jsonify
-import psycopg2
+
 import os
 import glob
 import difflib
@@ -25,20 +25,19 @@ from azure.storage.blob import (
     generate_container_sas,
     BlobSasPermissions,
 )
+import psycopg2
 
 applied_results = []
 logger_array = []
-with open('config.json') as f:
-    config = json.load(f)
 
-STORAGE_ACCOUNT_NAME = config.get('STORAGE_ACCOUNT_NAME')
-STORAGE_ACCOUNT_KEY_BASE64 = config.get('STORAGE_ACCOUNT_KEY_BASE64')
-STORAGE_CONTAINER_NAME = config.get('STORAGE_CONTAINER_NAME')
-CONFIG_DB_HOST = config.get('CONFIG_DB_HOST')
-CONFIG_DB_PORT = config.get('CONFIG_DB_PORT')
-CONFIG_DB_NAME = config.get('CONFIG_DB_NAME')
-CONFIG_DB_USER = config.get('CONFIG_DB_USER')
-CONFIG_DB_PASSWORD = config.get('CONFIG_DB_PASSWORD')
+STORAGE_ACCOUNT_NAME = os.environ.get('STORAGE_ACCOUNT_NAME')
+STORAGE_ACCOUNT_KEY_BASE64 = os.environ.get('STORAGE_ACCOUNT_KEY_BASE64')
+STORAGE_CONTAINER_NAME = os.environ.get('STORAGE_CONTAINER_NAME')
+CONFIG_DB_HOST = os.environ.get('CONFIG_DB_HOST')
+CONFIG_DB_PORT = os.environ.get('CONFIG_DB_PORT')
+CONFIG_DB_NAME = os.environ.get('CONFIG_DB_NAME')
+CONFIG_DB_USER = os.environ.get('CONFIG_DB_USER')
+CONFIG_DB_PASSWORD = os.environ.get('CONFIG_DB_PASSWORD')
 
 import base64
 import datetime
@@ -663,7 +662,6 @@ def get_pg_connection(params, access_token=None):
     Connect to PostgreSQL using either username/password or AAD access token (MFA).
     If access_token is provided, it is used as the password with 'Bearer ' prefix.
     """
-    import psycopg2
     conn_args = {
         'host': params['host'],
         'port': params['port'],
@@ -682,7 +680,6 @@ def get_pg_connection_string(params, access_token=None):
     Connect to PostgreSQL using either username/password or AAD access token (MFA).
     If access_token is provided, it is used as the password with 'Bearer ' prefix.
     """
-    import psycopg2
     conn_args = {
         'host': params['host'],
         'port': params['port'],
@@ -2475,4 +2472,4 @@ def dml_upload():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8000)
